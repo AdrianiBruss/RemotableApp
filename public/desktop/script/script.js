@@ -13,7 +13,6 @@ $(function(){
 
     });
 
-
     $('#code').html(secret_key);
 
 });
