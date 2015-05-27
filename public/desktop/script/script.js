@@ -13,6 +13,6 @@ $(function(){
 
     });
 
-    $('#code').html(secret_key);
+    $('#code').append('<a href="http://192.168.10.17:9000/mobileView/' + secret_key + '">Check for mobile</a>');
 
 });
