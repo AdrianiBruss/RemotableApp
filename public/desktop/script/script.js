@@ -43,22 +43,31 @@ $(function(){
     });
 
     //slider
-    socket.on('changeSliderDesk', function(data){
+    socket.on('swipeDesk', function(data){
 
-        if(data.direction == 'prev'){
-            $('.slidesjs-previous.slidesjs-navigation').trigger('click');
-        }else if (data.direction == 'next'){
-            $('.slidesjs-next.slidesjs-navigation').trigger('click');
+        switch (data.direction){
+            case 'prev':
+                $.fn.fullpage.moveSlideLeft();
+                break;
+            case 'next':
+                $.fn.fullpage.moveSlideRight();
+                break;
+            case 'up':
+                $.fn.fullpage.moveSectionUp();
+                break;
+            case 'down':
+                $.fn.fullpage.moveSectionDown();
+                break;
+
         }
 
     });
 
     //$('#code').append('<a href="http://192.168.20.253:3300/public/mobile/">Enter the code : '+secret_key+'</a>');
-    $('#code').append('<a href="http://192.168.10.16:3300/public/mobile/">Enter the code : '+secret_key+'</a>');
+    $('#code').append('<a href="http://192.168.10.16:3300/public/mobile/">'+secret_key+'</a>');
 
-    $("#slides").slidesjs({
-        width: 740,
-        height: 528
+    $('#fullpage').fullpage({
+        sectionsColor: ['#f2f2f2', '#4BBFC3', '#7BAABE', 'whitesmoke', '#000']
     });
 
 });

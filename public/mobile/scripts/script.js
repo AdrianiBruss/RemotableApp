@@ -51,12 +51,21 @@ $(function () {
     $('#slider')
         .on('swiperight', function () {
             console.log('swiperight');
-            socket.emit('changeSliderMobile', 'next');
+            socket.emit('swipeMobile', 'next');
 
         })
         .on('swipeleft', function () {
             console.log('swipeleft');
-            socket.emit('changeSliderMobile', 'prev');
+            socket.emit('swipeMobile', 'prev');
+        })
+        .on('swipeup', function () {
+            console.log('swipeup');
+            socket.emit('swipeMobile', 'up');
+
+        })
+        .on('swipedown', function () {
+            console.log('swipedown');
+            socket.emit('swipeMobile', 'down');
         });
 
 

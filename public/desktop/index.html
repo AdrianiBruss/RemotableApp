@@ -3,31 +3,46 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Desktop Part</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery.fullPage.css" />
 </head>
 <body>
 
-<h1>Hi Dude ! </h1>
-<p id="code"></p>
+<div id="wrapper">
 
-<nav id="menu">
-    <ul>
-        <li class="menu-item" data-desk-menu-item="page1"><a href="templates/page1.html">Section 1</a></li>
-        <li class="menu-item" data-desk-menu-item="page2"><a href="templates/page2.html">Section 2</a></li>
-        <li class="menu-item" data-desk-menu-item="page3"><a href="templates/page3.html">Section 3</a></li>
-    </ul>
-</nav>
-
-<div id="slides">
-    <img src="img/02.png">
-    <img src="img/02.png">
-    <img src="img/02.png">
-    <img src="img/02.png">
-    <img src="img/02.png">
+    <div id="fullpage">
+        <div class="section">
+            <h1>Hi Dude ! </h1>
+            <h2>Enter the code : <span id="code"></span></h2>
+        </div>
+        <div class="section">
+            <nav id="menu">
+                <ul>
+                    <li class="menu-item" data-desk-menu-item="page1"><a href="templates/page1.html">Section 1</a></li>
+                    <li class="menu-item" data-desk-menu-item="page2"><a href="templates/page2.html">Section 2</a></li>
+                    <li class="menu-item" data-desk-menu-item="page3"><a href="templates/page3.html">Section 3</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="section">
+            <div class="slide" data-anchor="slide1"> Slide 1 </div>
+            <div class="slide" data-anchor="slide2"> Slide 2 </div>
+            <div class="slide" data-anchor="slide3"> Slide 3 </div>
+            <div class="slide" data-anchor="slide4"> Slide 4 </div>
+        </div>
+    </div>
+    <div class="section">
+        <p>On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de distractions, et empêche de se concentrer sur la mise en page elle-même. L'avantage du Lorem Ipsum sur un texte générique comme 'Du texte. Du texte. Du texte.' est qu'il possède une distribution de lettres plus ou moins normale, et en tout cas comparable avec celle du français standard. De nombreuses suites logicielles de mise en page ou éditeurs de sites Web ont fait du Lorem Ipsum leur faux texte par défaut, et une recherche pour 'Lorem Ipsum' vous conduira vers de nombreux sites qui n'en sont encore qu'à leur phase de construction. Plusieurs versions sont apparues avec le temps, parfois par accident, souvent intentionnellement (histoire d'y rajouter de petits clins d'oeil, voire des phrases embarassantes).</p>
+    </div>
+    <div class="section">
+        <p>On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de distractions, et empêche de se concentrer sur la mise en page elle-même. L'avantage du Lorem Ipsum sur un texte générique comme 'Du texte. Du texte. Du texte.' est qu'il possède une distribution de lettres plus ou moins normale, et en tout cas comparable avec celle du français standard. De nombreuses suites logicielles de mise en page ou éditeurs de sites Web ont fait du Lorem Ipsum leur faux texte par défaut, et une recherche pour 'Lorem Ipsum' vous conduira vers de nombreux sites qui n'en sont encore qu'à leur phase de construction. Plusieurs versions sont apparues avec le temps, parfois par accident, souvent intentionnellement (histoire d'y rajouter de petits clins d'oeil, voire des phrases embarassantes).</p>
+    </div>
+    <div class="section">
+        <p>On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de distractions, et empêche de se concentrer sur la mise en page elle-même. L'avantage du Lorem Ipsum sur un texte générique comme 'Du texte. Du texte. Du texte.' est qu'il possède une distribution de lettres plus ou moins normale, et en tout cas comparable avec celle du français standard. De nombreuses suites logicielles de mise en page ou éditeurs de sites Web ont fait du Lorem Ipsum leur faux texte par défaut, et une recherche pour 'Lorem Ipsum' vous conduira vers de nombreux sites qui n'en sont encore qu'à leur phase de construction. Plusieurs versions sont apparues avec le temps, parfois par accident, souvent intentionnellement (histoire d'y rajouter de petits clins d'oeil, voire des phrases embarassantes).</p>
+    </div>
 </div>
 
-
 <script src="vendors/jquery.js"></script>
-<script src="vendors/jquery.slides.min.js"></script>
+<script type="text/javascript" src="vendors/jquery.fullPage.min.js"></script>
 <script src="http://192.168.10.16:3303/socket.io/socket.io.js"></script>
 <!--<script src="http://192.168.20.253:3303/socket.io/socket.io.js"></script>-->
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha512.js"></script>
