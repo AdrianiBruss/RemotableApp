@@ -1,0 +1,9 @@
+#slider{
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    display: block;
+    border: 1px solid #000;
+    text-align: center;
+    line-height: 300px;
+}
