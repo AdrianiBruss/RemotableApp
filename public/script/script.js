@@ -13,7 +13,7 @@ $(function(){
     }
 
     function getSecretCode(){
-        $('#code').append('<a href="http://192.168.20.253:3300/public/mobile/">'+secret_key+'</a>');
+        $('#code').append('<a href="http://192.168.20.253:3300/public/mobile/">Enter the code : '+secret_key+'</a>');
         //$('#code').append('<a href="http://192.168.10.16:3300/public/mobile/">'+secret_key+'</a>');
     }
 
@@ -21,7 +21,7 @@ $(function(){
 
         var site = {};
         site.url = document.URL;
-        site.hash = hash.toString();
+        site.hash = hash;
         sites.push(site);
 
         return sites;
@@ -37,7 +37,7 @@ $(function(){
     }
 
     var secret_key = randomString();
-    var hash = CryptoJS.SHA512(secret_key);
+    var hash = CryptoJS.SHA512(secret_key).toString();
 
     var local = getLocal();
 
@@ -81,6 +81,7 @@ $(function(){
     //var socket = io('ws://192.168.20.253:3303');
     var socket = io('ws://192.168.10.16:3303');
 
+    console.log('hash envoyé au serveur : '+hash);
     // Envoie la clé au serveur
     socket.emit('desktopCo', hash);
 
