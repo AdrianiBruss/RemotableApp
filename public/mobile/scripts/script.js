@@ -16,7 +16,7 @@ $(function () {
         // encrypte la clé en sha512
         key = CryptoJS.SHA512($('#input').val());
         // envoie la clé au serveur
-        socket.emit('mobileCo', key.words[0]);
+        socket.emit('mobileCo', key);
 
     });
 
