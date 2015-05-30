@@ -64,9 +64,39 @@ $(function () {
 
     }
 
+    function windowScroll(dir){
+
+        var pos = $window.scrollTop();
+
+        if (dir == 'up'){
+
+            //console.log($window.scrollTop());
+            //$window.scrollTop(pos - 20);
+            scrollBody(pos - height_window);
+
+        }else if(dir == 'down'){
+
+            //console.log($window.scrollTop());
+            //$window.scrollTop(pos + 20);
+            scrollBody(pos + height_window);
+
+        }
+
+    }
+
+    function scrollBody(target){
+        $htmlBody.animate({
+            scrollTop: target
+        }, 500);
+        return false;
+    }
+
+
 
     // --------------------------------------------------
-
+    var $htmlBody = $('html, body');
+    var $window = $(window);
+    var height_window = $window.height();
     var secret_key = randomString();
     var hash = CryptoJS.SHA512(secret_key).toString();
     var socket;
@@ -89,7 +119,6 @@ $(function () {
 
         console.log('getting from local .. ');
         var result = isSiteInLocal();
-        console.log(result);
 
         if (result.length == 1) {
             console.log('already connected with token ' + result[0].hash);
@@ -144,16 +173,16 @@ $(function () {
 
         switch (data.direction) {
             case 'prev':
-                $.fn.fullpage.moveSlideLeft();
+
                 break;
             case 'next':
-                $.fn.fullpage.moveSlideRight();
+
                 break;
             case 'up':
-                $.fn.fullpage.moveSectionUp();
+                windowScroll('up');
                 break;
             case 'down':
-                $.fn.fullpage.moveSectionDown();
+                windowScroll('down');
                 break;
 
         }
