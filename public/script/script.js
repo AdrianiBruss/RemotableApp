@@ -43,16 +43,23 @@ $(function () {
         localStorage.setItem('remotableSites', JSON.stringify(saveSite(sites, hash)));
     }
 
-    function connectionToSite(hash){
+    function connectionToSite(hash) {
 
         //var socket = io('ws://192.168.20.253:3303');
         socket = io('ws://192.168.10.16:3303');
 
         // Envoie la clé au serveur
         socket.emit('desktopCo', hash, function (data) {
-            if(data == 'desktopConnected'){
+            if (data == 'desktopConnected') {
                 console.log('desktop connected');
             }
+        });
+
+    }
+
+    function isSiteInLocal() {
+        return $.grep(websites, function (e) {
+            return e.name == document.URL.split('/')[2];
         });
 
     }
@@ -68,6 +75,7 @@ $(function () {
     // Check localStorage
 
     var local = getLocal();
+    var websites = JSON.parse(local);
 
     if (local == null) {
 
@@ -75,20 +83,13 @@ $(function () {
         connectionToSite(hash);
         // le code apparait
         getSecretCode();
-        // Stockage du site dans le localStorage
-        var sites = [];
-        setLocal(sites, hash);
 
 
     } else {
 
         console.log('getting from local .. ');
-
-        var websites = JSON.parse(local);
-
-        var result = $.grep(websites, function (e) {
-            return e.name == document.URL.split('/')[2];
-        });
+        var result = isSiteInLocal();
+        console.log(result);
 
         if (result.length == 1) {
             console.log('already connected with token ' + result[0].hash);
@@ -98,8 +99,7 @@ $(function () {
             console.log('Remotable exists but website not found');
 
             connectionToSite(hash);
-            // save site
-            setLocal(websites, hash);
+
             //code
             getSecretCode();
 
@@ -112,12 +112,24 @@ $(function () {
     // --------------------------------------------------
 
 
-
     // En attente de la connexion du mobile
     socket.on('mobileConnected', function (data) {
         if (data.data == "ok") {
             console.log('mobile connected');
             hideSecretCode();
+            //stockage dans la base de données
+            if (local == null) {
+                // Stockage du site dans le localStorage
+                var sites = [];
+                setLocal(sites, hash);
+            } else {
+                var local_site = isSiteInLocal();
+                if (local_site.length == 0) {
+                    // save site
+                    setLocal(websites, hash);
+                }
+
+            }
         }
     });
 
