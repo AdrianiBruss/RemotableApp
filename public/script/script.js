@@ -46,13 +46,11 @@ $(function () {
     function connectionToSite(hash) {
 
         //var socket = io('ws://192.168.20.253:3303');
-        socket = io('ws://192.168.10.16:3303');
+        socket = io('ws://192.168.10.1:3303');
 
         // Envoie la clé au serveur
         socket.emit('desktopCo', hash, function (data) {
-            if (data == 'desktopConnected') {
-                console.log('desktop connected');
-            }
+            console.log(data);
         });
 
     }
@@ -64,17 +62,17 @@ $(function () {
 
     }
 
-    function windowScroll(dir){
+    function windowScroll(dir) {
 
         var pos = $window.scrollTop();
 
-        if (dir == 'up'){
+        if (dir == 'up') {
 
             //console.log($window.scrollTop());
             //$window.scrollTop(pos - 20);
             scrollBody(pos - height_window);
 
-        }else if(dir == 'down'){
+        } else if (dir == 'down') {
 
             //console.log($window.scrollTop());
             //$window.scrollTop(pos + 20);
@@ -84,13 +82,35 @@ $(function () {
 
     }
 
-    function scrollBody(target){
+    function scrollBody(target) {
         $htmlBody.animate({
             scrollTop: target
         }, 500);
         return false;
     }
 
+    function sendMenu() {
+
+        // Récupération du menu
+        var $menu = $('li.menu-item');
+        var $link = $('li.menu-item > a');
+        var menu = [];
+
+        for (var i = 0; i<$menu.length; i++ ){
+
+            var link = {};
+            link.url = $link.eq(i).attr('href');
+            link.name = $link.eq(i).html();
+            menu.push(link);
+
+        }
+
+        socket.emit('sendMenu', menu, function (data) {
+            console.log(data);
+        });
+
+
+    }
 
 
     // --------------------------------------------------
@@ -123,6 +143,9 @@ $(function () {
         if (result.length == 1) {
             console.log('already connected with token ' + result[0].hash);
             connectionToSite(result[0].hash);
+
+            // envoi du menu au mobile
+            sendMenu();
         } else {
 
             console.log('Remotable exists but website not found');
@@ -140,12 +163,15 @@ $(function () {
 
     // --------------------------------------------------
 
-
     // En attente de la connexion du mobile
     socket.on('mobileConnected', function (data) {
         if (data.data == "ok") {
             console.log('mobile connected');
             hideSecretCode();
+
+            // envoi du menu au mobile
+            sendMenu();
+
             //stockage dans la base de données
             if (local == null) {
                 // Stockage du site dans le localStorage
@@ -163,9 +189,14 @@ $(function () {
     });
 
 
+    // --------------------------------------------------
+
+
+    // --------------------------------------------------
+
     // change link page
     socket.on('changeLinkDesk', function (data) {
-        $(location).attr('href', $("li.menu-item[data-desk-menu-item='" + data.link + "'] > a").attr('href'));
+        $(location).attr('href', data.link);
     });
 
     //slider
