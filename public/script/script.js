@@ -7,7 +7,7 @@ $(function () {
 
     function randomColor() {
 
-        var colors = ['6C7A89', 'F2784B', 'E87E04', '00B16A', '87D37C', '4B77BE', '2C3E50', 'F64747', 'F64747'];
+        var colors = ['6C7A89', 'F2784B', 'E87E04', '00B16A', '87D37C', '4B77BE', '2C3E50', 'F64747'];
         var code = "";
 
         for (var i = 0; i < 4; i++) {
@@ -177,7 +177,7 @@ $(function () {
     var height_window = $window.height();
     var secret_key = randomColor();
     var hash = CryptoJS.SHA512(secret_key).toString();
-    
+
 
     // --------------------------------------------------
     // Check localStorage
