@@ -3,6 +3,8 @@ $(function () {
 
     // --------------------------------------------------
 
+    var socket;
+
     function randomString() {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -43,13 +45,17 @@ $(function () {
         localStorage.setItem('remotableSites', JSON.stringify(saveSite(sites, hash)));
     }
 
-    function connectionToSite(hash) {
+    function connectionToSite(data) {
 
-        //var socket = io('ws://192.168.20.253:3303');
-        socket = io('ws://192.168.10.1:3303');
+
+        //socket = io('ws://192.168.20.253:3303');
+        //socket = io('ws://192.168.1.17:3303');
+        //socket = io('ws://remotableserver-cloudbruss.rhcloud.com');
+        //socket = io('ws://ancient-bayou-6152.herokuapp.com/');
+        socket = io('ws://192.168.10.16:3303');
 
         // Envoie la clé au serveur
-        socket.emit('desktopCo', hash, function (data) {
+        socket.emit('desktopCo', data, function (data) {
             console.log(data);
         });
 
@@ -89,7 +95,10 @@ $(function () {
         return false;
     }
 
-    function sendMenu() {
+
+    function getDatas(){
+
+        var data = {};
 
         // Récupération du menu
         var $menu = $('li.menu-item');
@@ -105,21 +114,33 @@ $(function () {
 
         }
 
-        socket.emit('sendMenu', menu, function (data) {
-            console.log(data);
-        });
+        data.menu = menu;
 
+        // Récupération du title
+        data.title = $(document).find("title").text();
+
+        // Récupération du favicon
+        data.favicon = 'favicon.png';
+
+        //Récupération de l'url
+        data.url = document.URL;
+
+        data.hash = hash;
+
+        data.add = true;
+
+        return data;
 
     }
 
 
-    // --------------------------------------------------
+
+    // ----------------------------------------------------------------------------------
     var $htmlBody = $('html, body');
     var $window = $(window);
     var height_window = $window.height();
     var secret_key = randomString();
     var hash = CryptoJS.SHA512(secret_key).toString();
-    var socket;
 
     // --------------------------------------------------
     // Check localStorage
@@ -127,10 +148,14 @@ $(function () {
     var local = getLocal();
     var websites = JSON.parse(local);
 
+
     if (local == null) {
 
-        // connexion au serveur
-        connectionToSite(hash);
+        var data = getDatas();
+
+        //connexion au serveur
+        connectionToSite(data);
+
         // le code apparait
         getSecretCode();
 
@@ -139,18 +164,20 @@ $(function () {
 
         console.log('getting from local .. ');
         var result = isSiteInLocal();
+        var dataHash = {};
 
         if (result.length == 1) {
             console.log('already connected with token ' + result[0].hash);
-            connectionToSite(result[0].hash);
 
-            // envoi du menu au mobile
-            sendMenu();
+            dataHash.hash = result[0].hash;
+            connectionToSite(dataHash);
+
         } else {
 
             console.log('Remotable exists but website not found');
 
-            connectionToSite(hash);
+            dataHash.hash = hash;
+            connectionToSite(dataHash);
 
             //code
             getSecretCode();
@@ -164,13 +191,11 @@ $(function () {
     // --------------------------------------------------
 
     // En attente de la connexion du mobile
-    socket.on('mobileConnected', function (data) {
+    socket.on('mobileConnectedForDesktop', function (data) {
+
         if (data.data == "ok") {
             console.log('mobile connected');
             hideSecretCode();
-
-            // envoi du menu au mobile
-            sendMenu();
 
             //stockage dans la base de données
             if (local == null) {
