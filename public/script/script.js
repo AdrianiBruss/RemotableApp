@@ -5,6 +5,23 @@ $(function () {
 
     var socket;
 
+    function randomColor() {
+
+        var colors = ['6C7A89', 'F2784B', 'E87E04', '00B16A', '87D37C', '4B77BE', '2C3E50', 'F64747', 'F64747'];
+        var code = "";
+
+        for (var i = 0; i < 4; i++) {
+
+            code += colors[Math.floor((Math.random() * colors.length - 1 ) + 1)] + '-';
+
+        }
+
+        code = code.substring(0, code.length-1);
+
+        return code;
+
+    }
+
     function randomString() {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -16,12 +33,32 @@ $(function () {
     }
 
     function getSecretCode() {
-        $('#code').append('<a href="http://192.168.20.253:3300/public/mobile/">Enter the code : ' + secret_key + '</a>');
+
+        var keyColor = secret_key.split('-');
+
+        var code = '';
+
+        for (var i = 0; i < 4; i++) {
+
+            code += '<span class="case" style="background-color:#' + keyColor[i] + '"></span>';
+
+        }
+
+        $('#colors-code').append(code);
+
+        $('.case').css({
+            'width': '30px',
+            'height': '30px',
+            'display': 'inline-block',
+            'margin': '0 5px'
+        });
+
+        //$('#code').append('<a href="http://192.168.20.253:3300/public/mobile/">Enter the code : ' + secret_key + '</a>');
         //$('#code').append('<a href="http://192.168.10.16:3300/public/mobile/">'+secret_key+'</a>');
     }
 
     function hideSecretCode() {
-        $('#code').remove();
+        $('#colors-code').remove();
     }
 
     function saveSite(sites, hash) {
@@ -96,7 +133,7 @@ $(function () {
     }
 
 
-    function getDatas(){
+    function getDatas() {
 
         var data = {};
 
@@ -105,7 +142,7 @@ $(function () {
         var $link = $('li.menu-item > a');
         var menu = [];
 
-        for (var i = 0; i<$menu.length; i++ ){
+        for (var i = 0; i < $menu.length; i++) {
 
             var link = {};
             link.url = $link.eq(i).attr('href');
@@ -134,13 +171,13 @@ $(function () {
     }
 
 
-
     // ----------------------------------------------------------------------------------
     var $htmlBody = $('html, body');
     var $window = $(window);
     var height_window = $window.height();
-    var secret_key = randomString();
+    var secret_key = randomColor();
     var hash = CryptoJS.SHA512(secret_key).toString();
+    
 
     // --------------------------------------------------
     // Check localStorage
@@ -221,7 +258,13 @@ $(function () {
 
     // change link page
     socket.on('changeLinkDesk', function (data) {
-        $(location).attr('href', data.link);
+        var origin = $(location).attr('origin');
+
+        //dev
+        origin += '/RemotableSite/public/';
+
+
+        $(location).attr('href', origin + data.link);
     });
 
     //slider
