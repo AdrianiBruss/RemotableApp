@@ -6,10 +6,9 @@ $(function () {
     var $htmlBody = $('html, body');
     var $window = $(window);
     var height_window = $window.height();
-    //var secret_key = randomColor();
-    //var hash = CryptoJS.SHA512(secret_key).toString();
     var hash = '';
     var socket;
+    var key = '';
 
     // --------------------------------------------------
     // Check localStorage
@@ -60,12 +59,13 @@ $(function () {
             .css('display', 'none');
     }
 
-    function saveSite(sites, hash) {
+    function saveSite(sites, hash, key) {
 
         var site = {};
         site.name = document.URL.split('/')[2];
         site.url = document.URL;
         site.hash = hash;
+        site.key = key;
         sites.push(site);
 
         return sites;
@@ -77,8 +77,33 @@ $(function () {
     }
 
     function setLocal(sites, hash) {
-        console.log('saving to local .. ');
         localStorage.setItem('remotableSites', JSON.stringify(saveSite(sites, hash)));
+    }
+
+    function removeLocal(hash){
+
+        var local = JSON.parse(localStorage.remotableSites);
+
+        if (local.length == 1){
+
+            localStorage.removeItem('remotableSites');
+
+        }else{
+
+            for (var i = 0; i < local.length; i++){
+
+                if (hash == local[i].hash){
+
+                    local = local.slice(i+1);
+                }
+
+            }
+            localStorage.setItem('remotableSites', JSON.stringify(local));
+
+        }
+
+        console.log('item deleted from LocalStorage');
+
     }
 
     function connectionToSite(data) {
@@ -92,19 +117,18 @@ $(function () {
         socket.on('mobileConnectedForDesktop', function (data) {
 
             if (data.data == "ok") {
-                console.log('mobile connected');
                 hideSecretCode();
 
                 //stockage dans la base de données
                 if (local == null) {
                     // Stockage du site dans le localStorage
                     var sites = [];
-                    setLocal(sites, hash);
+                    setLocal(sites, hash, key);
                 } else {
                     var local_site = isSiteInLocal();
                     if (local_site.length == 0) {
                         // save site
-                        setLocal(websites, hash);
+                        setLocal(websites, hash, key);
                     }
 
                 }
@@ -144,11 +168,25 @@ $(function () {
 
         });
 
-
-        // Envoie une requete au serveur pour récupérer le hash et le code
-        socket.emit('desktopCo', data, function (data) {
+        // deleted mobile
+        socket.on('deleteMobileForDesktop', function(data){
 
             console.log(data);
+            removeLocal(data.data.hash);
+
+        });
+
+        // Envoie une requete au serveur pour récupérer le hash et le code
+        socket.emit('desktopConnection', data, function (data) {
+
+            console.log(data);
+
+            // site supprimé du mobile
+            if (data.code == 45){
+
+                //suppression du localStorage
+                removeLocal(data.hash);
+            }
 
             // affiche le message dans la fenetre
             putContentOnPopup(data.infos);
@@ -156,8 +194,11 @@ $(function () {
             if (data.datas){
 
                 hash = data.datas.hash;
+                key = data.datas.key;
                 getSecretCode(data.datas.key);
             }
+
+
 
 
         });
@@ -208,7 +249,6 @@ $(function () {
         return false;
     }
 
-
     function getDatas() {
 
         var data = {};
@@ -241,42 +281,6 @@ $(function () {
         //data.hash = hash;
 
         return data;
-
-    }
-
-
-    function popupShowConnected() {
-
-        $('#remote-popup')
-            .append('<p>You are already connected</p>')
-            .append('<a href="#" id="remote-popup-delete">Delete this connection</a>');
-
-    }
-
-
-    function checkPopup() {
-
-        if (local == null) {
-
-            // le code apparait
-            getSecretCode();
-
-        } else {
-
-
-            var result = isSiteInLocal();
-            if (result.length == 1) {
-
-                popupShowConnected();
-
-            } else {
-
-                //code
-                getSecretCode();
-
-            }
-
-        }
 
     }
 
