@@ -1,50 +1,42 @@
 $(function () {
     'use strict';
 
-    // --------------------------------------------------
 
+    // ----------------------------------------------------------------------------------
+    var $htmlBody = $('html, body');
+    var $window = $(window);
+    var height_window = $window.height();
+    //var secret_key = randomColor();
+    //var hash = CryptoJS.SHA512(secret_key).toString();
+    var hash = '';
     var socket;
 
-    function randomColor() {
+    // --------------------------------------------------
+    // Check localStorage
 
-        var colors = ['6C7A89', 'F2784B', 'E87E04', '00B16A', '87D37C', '4B77BE', '2C3E50', 'F64747'];
-        var code = "";
+    var local = getLocal();
+    var websites = JSON.parse(local);
 
-        for (var i = 0; i < 4; i++) {
 
-            code += colors[Math.floor((Math.random() * colors.length - 1 ) + 1)] + '-';
+    // --------------------------------------------------
 
-        }
+    function getSecretCode(data) {
 
-        code = code.substring(0, code.length-1);
+        var keyColor = data.split('');
 
-        return code;
-
-    }
-
-    function randomString() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-        for (var i = 0; i < 4; i++)
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        return text;
-    }
-
-    function getSecretCode() {
-
-        var keyColor = secret_key.split('-');
+        var colors = ['6C7A89', 'F2784B', 'F9BF3B', '00B16A', '87D37C', '4B77BE', '2C3E50', 'F64747', 'AEA8D3', '674172'];
 
         var code = '';
 
         for (var i = 0; i < 4; i++) {
 
-            code += '<span class="case" style="background-color:#' + keyColor[i] + '"></span>';
+            code += '<span class="case" style="background-color:#' + colors[keyColor[i]] + '"></span>';
 
         }
 
-        $('#colors-code').append(code);
+        $('#remote-popup')
+            .append('<p>Download the app and enter the code : </p>')
+            .append(code);
 
         $('.case').css({
             'width': '30px',
@@ -53,12 +45,19 @@ $(function () {
             'margin': '0 5px'
         });
 
-        //$('#code').append('<a href="http://192.168.20.253:3300/public/mobile/">Enter the code : ' + secret_key + '</a>');
-        //$('#code').append('<a href="http://192.168.10.16:3300/public/mobile/">'+secret_key+'</a>');
+    }
+
+    function putContentOnPopup(msg) {
+
+        $('#remote-popup')
+            .append('<p>' + msg + '</p>');
+
     }
 
     function hideSecretCode() {
-        $('#colors-code').remove();
+        $('#remote-popup')
+            .empty()
+            .css('display', 'none');
     }
 
     function saveSite(sites, hash) {
@@ -84,24 +83,101 @@ $(function () {
 
     function connectionToSite(data) {
 
-
         //socket = io('ws://192.168.20.253:3303');
-        //socket = io('ws://192.168.1.17:3303');
-        //socket = io('ws://remotableserver-cloudbruss.rhcloud.com');
-        //socket = io('ws://ancient-bayou-6152.herokuapp.com/');
-        socket = io('ws://192.168.10.16:3303');
+        //socket = io('ws://192.168.10.16:3303');
+        socket = io('ws://192.168.10.17:3303');
 
-        // Envoie la clé au serveur
-        socket.emit('desktopCo', data, function (data) {
-            console.log(data);
+        // --------------------------------------------------
+        // En attente de la connexion du mobile
+        socket.on('mobileConnectedForDesktop', function (data) {
+
+            if (data.data == "ok") {
+                console.log('mobile connected');
+                hideSecretCode();
+
+                //stockage dans la base de données
+                if (local == null) {
+                    // Stockage du site dans le localStorage
+                    var sites = [];
+                    setLocal(sites, hash);
+                } else {
+                    var local_site = isSiteInLocal();
+                    if (local_site.length == 0) {
+                        // save site
+                        setLocal(websites, hash);
+                    }
+
+                }
+            }
         });
+
+        // --------------------------------------------------
+        // change link page
+        socket.on('changeLinkDesk', function (data) {
+            var origin = $(location).attr('origin');
+
+            //dev
+            origin += '/RemotableSite/public/';
+
+
+            $(location).attr('href', origin + data.link);
+        });
+
+        //slider
+        socket.on('swipeDesk', function (data) {
+
+            switch (data.direction) {
+                case 'prev':
+
+                    break;
+                case 'next':
+
+                    break;
+                case 'up':
+                    windowScroll('up');
+                    break;
+                case 'down':
+                    windowScroll('down');
+                    break;
+
+            }
+
+        });
+
+
+        // Envoie une requete au serveur pour récupérer le hash et le code
+        socket.emit('desktopCo', data, function (data) {
+
+            console.log(data);
+
+            // affiche le message dans la fenetre
+            putContentOnPopup(data.infos);
+
+            if (data.datas){
+
+                hash = data.datas.hash;
+                getSecretCode(data.datas.key);
+            }
+
+
+        });
+
 
     }
 
     function isSiteInLocal() {
-        return $.grep(websites, function (e) {
-            return e.name == document.URL.split('/')[2];
-        });
+        if (websites != null) {
+
+            return $.grep(websites, function (e) {
+                return e.name == document.URL.split('/')[2];
+            });
+
+        } else {
+
+            return null;
+
+        }
+
 
     }
 
@@ -162,131 +238,127 @@ $(function () {
         //Récupération de l'url
         data.url = document.URL;
 
-        data.hash = hash;
-
-        data.add = true;
+        //data.hash = hash;
 
         return data;
 
     }
 
 
-    // ----------------------------------------------------------------------------------
-    var $htmlBody = $('html, body');
-    var $window = $(window);
-    var height_window = $window.height();
-    var secret_key = randomColor();
-    var hash = CryptoJS.SHA512(secret_key).toString();
+    function popupShowConnected() {
+
+        $('#remote-popup')
+            .append('<p>You are already connected</p>')
+            .append('<a href="#" id="remote-popup-delete">Delete this connection</a>');
+
+    }
 
 
-    // --------------------------------------------------
-    // Check localStorage
+    function checkPopup() {
 
-    var local = getLocal();
-    var websites = JSON.parse(local);
+        if (local == null) {
 
-
-    if (local == null) {
-
-        var data = getDatas();
-
-        //connexion au serveur
-        connectionToSite(data);
-
-        // le code apparait
-        getSecretCode();
-
-
-    } else {
-
-        console.log('getting from local .. ');
-        var result = isSiteInLocal();
-        var dataHash = {};
-
-        if (result.length == 1) {
-            console.log('already connected with token ' + result[0].hash);
-
-            dataHash.hash = result[0].hash;
-            connectionToSite(dataHash);
+            // le code apparait
+            getSecretCode();
 
         } else {
 
-            console.log('Remotable exists but website not found');
 
-            dataHash.hash = hash;
-            connectionToSite(dataHash);
+            var result = isSiteInLocal();
+            if (result.length == 1) {
 
-            //code
-            getSecretCode();
+                popupShowConnected();
+
+            } else {
+
+                //code
+                getSecretCode();
+
+            }
+
+        }
+
+    }
+
+    function checkLocal() {
+
+
+        if (local == null) {
+
+            var data = getDatas();
+
+            //connexion au serveur
+            connectionToSite(data);
+
+
+        } else {
+
+            console.log('getting from local .. ');
+            var result = isSiteInLocal();
+            var dataHash = {};
+
+            if (result.length == 1) {
+                console.log('already connected with token ' + result[0].hash);
+
+                dataHash.hash = result[0].hash;
+                connectionToSite(dataHash);
+
+            } else {
+
+                console.log('Remotable exists but website not found');
+
+                dataHash.hash = hash;
+                connectionToSite(dataHash);
+
+
+            }
+
 
         }
 
 
     }
 
+    function init() {
+
+        //checkLocal();
+
+
+        // initialisation du script
+
+        // pastille sur le site
+
+        // Display popup
+        $('#remote-code a').on('click', function () {
+
+            $('#remote-popup').css('display', 'block');
+
+            checkLocal();
+
+            //checkPopup();
+
+
+        });
+
+        // Close Popup
+        $('#remote-popup-close').on('click', function () {
+            $('#remote-popup').css('display', 'none');
+        });
+
+        // DeleteSite
+        $('#remote-popup-delete').on('click', function () {
+
+
+        });
+
+
+    }
+
+
+    init();
+
 
     // --------------------------------------------------
-
-    // En attente de la connexion du mobile
-    socket.on('mobileConnectedForDesktop', function (data) {
-
-        if (data.data == "ok") {
-            console.log('mobile connected');
-            hideSecretCode();
-
-            //stockage dans la base de données
-            if (local == null) {
-                // Stockage du site dans le localStorage
-                var sites = [];
-                setLocal(sites, hash);
-            } else {
-                var local_site = isSiteInLocal();
-                if (local_site.length == 0) {
-                    // save site
-                    setLocal(websites, hash);
-                }
-
-            }
-        }
-    });
-
-
-    // --------------------------------------------------
-
-
-    // --------------------------------------------------
-
-    // change link page
-    socket.on('changeLinkDesk', function (data) {
-        var origin = $(location).attr('origin');
-
-        //dev
-        origin += '/RemotableSite/public/';
-
-
-        $(location).attr('href', origin + data.link);
-    });
-
-    //slider
-    socket.on('swipeDesk', function (data) {
-
-        switch (data.direction) {
-            case 'prev':
-
-                break;
-            case 'next':
-
-                break;
-            case 'up':
-                windowScroll('up');
-                break;
-            case 'down':
-                windowScroll('down');
-                break;
-
-        }
-
-    });
 
 
 });
