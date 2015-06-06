@@ -171,7 +171,6 @@ $(function () {
         // deleted mobile
         socket.on('deleteMobileForDesktop', function(data){
 
-            console.log(data);
             removeLocal(data.data.hash);
 
         });
@@ -278,8 +277,8 @@ $(function () {
         //Récupération de l'url
         data.url = document.URL;
 
-        //data.hash = hash;
-
+        data.bodyHeight = $('body').height();
+        
         return data;
 
     }
