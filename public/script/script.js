@@ -119,6 +119,8 @@ $(function () {
             if (data.data == "ok") {
                 hideSecretCode();
 
+                socket.emit('resizeDesktop', $window.height());
+
                 //stockage dans la base de données
                 if (local == null) {
                     // Stockage du site dans le localStorage
@@ -166,6 +168,7 @@ $(function () {
 
             }
 
+
         });
 
         // deleted mobile
@@ -201,6 +204,8 @@ $(function () {
 
 
         });
+
+        //$window.on('resize', function(){});
 
 
     }
