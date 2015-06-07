@@ -278,7 +278,7 @@ $(function () {
         data.url = document.URL;
 
         data.bodyHeight = $('body').height();
-        
+
         return data;
 
     }
@@ -324,24 +324,33 @@ $(function () {
 
     function init() {
 
-        //checkLocal();
+        var $popup = $('#remote-code a');
 
 
-        // initialisation du script
+        if ( $popup.length > 0){
 
-        // pastille sur le site
+            // initialisation du script
+            console.log('FIRST PAGE SCRIPT');
 
-        // Display popup
-        $('#remote-code a').on('click', function () {
+            // pastille sur le site
 
-            $('#remote-popup').css('display', 'block');
+            // Display popup
+            $popup.on('click', function () {
+
+                $('#remote-popup').css('display', 'block');
+
+                checkLocal();
+
+            });
+
+        }else{
+
+            console.log('OTHER PAGE SCRIPT');
 
             checkLocal();
 
-            //checkPopup();
+        }
 
-
-        });
 
         // Close Popup
         $('#remote-popup-close').on('click', function () {
@@ -357,11 +366,8 @@ $(function () {
 
     }
 
-
-    init();
-
-
     // --------------------------------------------------
 
+    init();
 
 });
