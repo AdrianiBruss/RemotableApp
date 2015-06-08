@@ -108,9 +108,9 @@ $(function () {
 
     function connectionToSite(data) {
 
-        //socket = io('ws://192.168.20.253:3303');
+        socket = io('ws://192.168.20.253:3303');
         //socket = io('ws://192.168.10.16:3303');
-        socket = io('ws://192.168.10.17:3303');
+        //socket = io('ws://192.168.10.17:3303');
 
         // --------------------------------------------------
         // En attente de la connexion du mobile
@@ -200,6 +200,9 @@ $(function () {
                 getSecretCode(data.datas.key);
             }
 
+        });
+
+        socket.emit('datasDesktop', data, function(data){
 
 
 
@@ -253,20 +256,64 @@ $(function () {
         return false;
     }
 
+    function getContext(){
+
+        var data = {};
+        var text_links = $('.remote-link-text');
+        var video_links = $('.remote-link-video');
+        var img_links = $('.remote-link-img');
+
+        data.windowHeight = $window.height();
+
+        data.links = [];
+
+        for (var j=0; j < text_links.length; j++ ){
+
+            var textLinks = {};
+            textLinks.type = 'text';
+            textLinks.text = text_links.eq(j).html();
+            textLinks.position = text_links.eq(j).offset();
+            data.links.push(textLinks);
+        }
+
+        for (var k=0; k < video_links.length; k++ ){
+
+            var videoLinks = {};
+            videoLinks.type = 'text';
+            videoLinks.text = video_links.eq(k).html();
+            videoLinks.position = video_links.eq(k).offset();
+            data.links.push(videoLinks);
+        }
+
+        for (var l=0; l < img_links.length; l++ ){
+
+            var imgLinks = {};
+            imgLinks.type = 'text';
+            imgLinks.text = img_links.eq(l).html();
+            imgLinks.position = img_links.eq(l).offset();
+            data.links.push(imgLinks);
+        }
+
+        return data;
+
+
+    }
+
     function getDatas() {
 
         var data = {};
 
         // Récupération du menu
-        var $menu = $('li.menu-item');
-        var $link = $('li.menu-item > a');
+        var $menu = $('nav.remote-menu');
+        var $link = $('nav.remote-menu > ul > li');
         var menu = [];
 
-        for (var i = 0; i < $menu.length; i++) {
+
+        for (var i = 0; i < $link.length; i++) {
 
             var link = {};
-            link.url = $link.eq(i).attr('href');
-            link.name = $link.eq(i).html();
+            link.url = $link.eq(i).find('a').attr('href');
+            link.name = $link.eq(i).find('a').html();
             menu.push(link);
 
         }
@@ -294,6 +341,7 @@ $(function () {
         if (local == null) {
 
             var data = getDatas();
+            $.extend(data, getContext());
 
             //connexion au serveur
             connectionToSite(data);
@@ -303,20 +351,23 @@ $(function () {
 
             console.log('getting from local .. ');
             var result = isSiteInLocal();
-            var dataHash = {};
+            var dataContext = {};
 
             if (result.length == 1) {
                 console.log('already connected with token ' + result[0].hash);
 
-                dataHash.hash = result[0].hash;
-                connectionToSite(dataHash);
+                dataContext.hash = result[0].hash;
+                $.extend(dataContext, getContext());
+
+                connectionToSite(dataContext);
 
             } else {
 
                 console.log('Remotable exists but website not found');
 
-                dataHash.hash = hash;
-                connectionToSite(dataHash);
+                dataContext.hash = hash;
+                $.extend(dataContext, getContext());
+                connectionToSite(dataContext);
 
 
             }
