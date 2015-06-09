@@ -121,7 +121,7 @@ $(function () {
             if (data.data == "ok") {
                 hideSecretCode();
 
-                //socket.emit('resizeDesktop', $window.height());
+                $.fn.fullpage.moveTo(1);
 
                 //stockage dans la base de données
                 if (local == null) {
@@ -281,30 +281,37 @@ $(function () {
 
         data.layout = [];
 
+        for (var item = 0; item < data.nbSections; item++){
+            data.layout.push([]);
+        }
+
+
+
         for (var i = 0; i < img_gallery.length; i++) {
 
             var imgGallery = {};
             imgGallery.type = 'gallery';
-            imgGallery.section = img_gallery.eq(i).closest('.section').index();
-            data.layout.push(imgGallery);
+            imgGallery.text = 'Here is a gallery';
+            imgGallery.section = img_gallery.eq(i).closest('.section').index() +1;
+            data.layout[imgGallery.section -1].push(imgGallery);
         }
-
 
         for (var j = 0; j < text_links.length; j++) {
 
             var textLinks = {};
             textLinks.type = 'text';
             textLinks.text = text_links.eq(j).html();
-            textLinks.section = text_links.eq(j).closest('.section').index();
-            data.layout.push(textLinks);
+            textLinks.section = text_links.eq(j).closest('.section').index() +1;
+            data.layout[textLinks.section -1].push(textLinks);
         }
 
         for (var k = 0; k < video_links.length; k++) {
 
             var videoLinks = {};
             videoLinks.type = 'video';
-            videoLinks.section = video_links.eq(k).closest('.section').index();
-            data.layout.push(videoLinks);
+            videoLinks.text = 'here is a video ';
+            videoLinks.section = video_links.eq(k).closest('.section').index() +1;
+            data.layout[videoLinks.section -1].push(videoLinks);
         }
 
         //for (var l=0; l < img_links.length; l++ ){
@@ -313,7 +320,8 @@ $(function () {
         //    imgLinks.type = 'img';
         //    imgLinks.text = img_links.eq(l).html();
         //    imgLinks.position = img_links.eq(l).offset();
-        //    data.links.push(imgLinks);
+        //    imgLinks.position = img_links.eq(l).closest('.section').index() +1;
+        //    data.layout[imgLinks.section -1].push(imgLinks);
         //}
 
 
