@@ -80,21 +80,21 @@ $(function () {
         localStorage.setItem('remotableSites', JSON.stringify(saveSite(sites, hash)));
     }
 
-    function removeLocal(hash){
+    function removeLocal(hash) {
 
         var local = JSON.parse(localStorage.remotableSites);
 
-        if (local.length == 1){
+        if (local.length == 1) {
 
             localStorage.removeItem('remotableSites');
 
-        }else{
+        } else {
 
-            for (var i = 0; i < local.length; i++){
+            for (var i = 0; i < local.length; i++) {
 
-                if (hash == local[i].hash){
+                if (hash == local[i].hash) {
 
-                    local = local.slice(i+1);
+                    local = local.slice(i + 1);
                 }
 
             }
@@ -108,9 +108,11 @@ $(function () {
 
     function connectionToSite(data) {
 
-        socket = io('ws://192.168.20.253:3303');
+        console.log(data);
+
+        //socket = io('ws://192.168.20.253:3303');
         //socket = io('ws://192.168.10.16:3303');
-        //socket = io('ws://192.168.10.17:3303');
+        socket = io('ws://192.168.10.17:3303');
 
         // --------------------------------------------------
         // En attente de la connexion du mobile
@@ -119,7 +121,7 @@ $(function () {
             if (data.data == "ok") {
                 hideSecretCode();
 
-                socket.emit('resizeDesktop', $window.height());
+                //socket.emit('resizeDesktop', $window.height());
 
                 //stockage dans la base de données
                 if (local == null) {
@@ -154,16 +156,18 @@ $(function () {
 
             switch (data.direction) {
                 case 'prev':
-
+                    $.fn.fullpage.moveSlideLeft();
                     break;
                 case 'next':
-
+                    $.fn.fullpage.moveSlideRight();
                     break;
                 case 'up':
-                    windowScroll('up');
+                    //windowScroll('up');
+                    $.fn.fullpage.moveSectionUp();
                     break;
                 case 'down':
-                    windowScroll('down');
+                    //windowScroll('down');
+                    $.fn.fullpage.moveSectionDown();
                     break;
 
             }
@@ -172,7 +176,7 @@ $(function () {
         });
 
         // deleted mobile
-        socket.on('deleteMobileForDesktop', function(data){
+        socket.on('deleteMobileForDesktop', function (data) {
 
             removeLocal(data.data.hash);
 
@@ -184,7 +188,7 @@ $(function () {
             console.log(data);
 
             // site supprimé du mobile
-            if (data.code == 45){
+            if (data.code == 45) {
 
                 //suppression du localStorage
                 removeLocal(data.hash);
@@ -193,7 +197,7 @@ $(function () {
             // affiche le message dans la fenetre
             putContentOnPopup(data.infos);
 
-            if (data.datas){
+            if (data.datas) {
 
                 hash = data.datas.hash;
                 key = data.datas.key;
@@ -202,13 +206,8 @@ $(function () {
 
         });
 
-        socket.emit('datasDesktop', data, function(data){
-
-
-
+        socket.emit('datasDesktop', data, function (data) {
         });
-
-        //$window.on('resize', function(){});
 
 
     }
@@ -237,13 +236,13 @@ $(function () {
 
             //console.log($window.scrollTop());
             //$window.scrollTop(pos - 20);
-            scrollBody(pos - height_window);
+            //scrollBody(pos - height_window);
 
         } else if (dir == 'down') {
 
             //console.log($window.scrollTop());
             //$window.scrollTop(pos + 20);
-            scrollBody(pos + height_window);
+            //scrollBody(pos + height_window);
 
         }
 
@@ -256,43 +255,67 @@ $(function () {
         return false;
     }
 
-    function getContext(){
+    function getContext() {
 
         var data = {};
+        var img_gallery = $('.remote-gallery');
         var text_links = $('.remote-link-text');
-        var video_links = $('.remote-link-video');
+        var video_links = $('.remote-video');
         var img_links = $('.remote-link-img');
+        var $link = $('nav.remote-menu > ul > li');
+        var menu = [];
 
-        data.windowHeight = $window.height();
 
-        data.links = [];
+        for (var h = 0; h < $link.length; h++) {
 
-        for (var j=0; j < text_links.length; j++ ){
+            var link = {};
+            link.url = $link.eq(h).find('a').attr('href');
+            link.name = $link.eq(h).find('a').html();
+            menu.push(link);
+
+        }
+
+        data.menu = menu;
+
+        data.nbSections = $('.section').length;
+
+        data.layout = [];
+
+        for (var i = 0; i < img_gallery.length; i++) {
+
+            var imgGallery = {};
+            imgGallery.type = 'gallery';
+            imgGallery.section = img_gallery.eq(i).closest('.section').index();
+            data.layout.push(imgGallery);
+        }
+
+
+        for (var j = 0; j < text_links.length; j++) {
 
             var textLinks = {};
             textLinks.type = 'text';
             textLinks.text = text_links.eq(j).html();
-            textLinks.position = text_links.eq(j).offset();
-            data.links.push(textLinks);
+            textLinks.section = text_links.eq(j).closest('.section').index();
+            data.layout.push(textLinks);
         }
 
-        for (var k=0; k < video_links.length; k++ ){
+        for (var k = 0; k < video_links.length; k++) {
 
             var videoLinks = {};
-            videoLinks.type = 'text';
-            videoLinks.text = video_links.eq(k).html();
-            videoLinks.position = video_links.eq(k).offset();
-            data.links.push(videoLinks);
+            videoLinks.type = 'video';
+            videoLinks.section = video_links.eq(k).closest('.section').index();
+            data.layout.push(videoLinks);
         }
 
-        for (var l=0; l < img_links.length; l++ ){
+        //for (var l=0; l < img_links.length; l++ ){
+        //
+        //    var imgLinks = {};
+        //    imgLinks.type = 'img';
+        //    imgLinks.text = img_links.eq(l).html();
+        //    imgLinks.position = img_links.eq(l).offset();
+        //    data.links.push(imgLinks);
+        //}
 
-            var imgLinks = {};
-            imgLinks.type = 'text';
-            imgLinks.text = img_links.eq(l).html();
-            imgLinks.position = img_links.eq(l).offset();
-            data.links.push(imgLinks);
-        }
 
         return data;
 
@@ -303,23 +326,6 @@ $(function () {
 
         var data = {};
 
-        // Récupération du menu
-        var $menu = $('nav.remote-menu');
-        var $link = $('nav.remote-menu > ul > li');
-        var menu = [];
-
-
-        for (var i = 0; i < $link.length; i++) {
-
-            var link = {};
-            link.url = $link.eq(i).find('a').attr('href');
-            link.name = $link.eq(i).find('a').html();
-            menu.push(link);
-
-        }
-
-        data.menu = menu;
-
         // Récupération du title
         data.title = $(document).find("title").text();
 
@@ -329,7 +335,7 @@ $(function () {
         //Récupération de l'url
         data.url = document.URL;
 
-        data.bodyHeight = $('body').height();
+        //data.bodyHeight = $('body').height();
 
         return data;
 
@@ -381,14 +387,7 @@ $(function () {
     function init() {
 
         var $popup = $('#remote-code a');
-
-
-        if ( $popup.length > 0){
-
-            // initialisation du script
-            console.log('FIRST PAGE SCRIPT');
-
-            // pastille sur le site
+        if ($popup.length > 0) {
 
             // Display popup
             $popup.on('click', function () {
@@ -399,9 +398,9 @@ $(function () {
 
             });
 
-        }else{
+        } else {
 
-            console.log('OTHER PAGE SCRIPT');
+            //console.log('OTHER PAGE SCRIPT');
 
             checkLocal();
 
@@ -425,5 +424,6 @@ $(function () {
     // --------------------------------------------------
 
     init();
+
 
 });

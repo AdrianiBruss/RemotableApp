@@ -1,4 +1,4 @@
-#remote-code{
+#remote-code {
 
     position: fixed;
     top: 10px;
@@ -6,12 +6,14 @@
     width: 40px;
     height: 40px;
     display: block;
+    z-index: 100;
 
 }
-#remote-code a{
+
+#remote-code a {
 
     display: block;
-    width:100%;
+    width: 100%;
     height: 100%;
     border-radius: 50%;
     border: 2px solid #ccc;
@@ -21,7 +23,7 @@
 
 }
 
-#remote-popup{
+#remote-popup {
 
     display: none;
     position: fixed;
@@ -32,5 +34,25 @@
     width: 400px;
     height: 200px;
     background-color: #DCC6E0;
+    z-index: 100;
+
+}
+
+#menu {
+    position: fixed;
+    top: 0;
+    width: 100%;
+
+}
+
+#menu ul {
+    display: flex;
+}
+
+#menu ul li {
+    flex: 1;
+}
+
+#slides {
 
 }
