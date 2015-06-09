@@ -112,8 +112,8 @@ $(function () {
 
         //socket = io('ws://192.168.20.253:3303');
         //socket = io('ws://192.168.10.16:3303');
-        //socket = io('ws://192.168.10.17:3303');
-        socket = io('ws://remote-cloudbruss.rhcloud.com:8000');
+        socket = io('ws://192.168.10.17:3303');
+        //socket = io('ws://remote-cloudbruss.rhcloud.com:8000');
 
         // --------------------------------------------------
         // En attente de la connexion du mobile
@@ -431,6 +431,23 @@ $(function () {
     }
 
     // --------------------------------------------------
+
+    $('#fullpage').fullpage({
+        sectionsColor: ['#f2f2f2', '#4BBFC3', '#7BAABE', 'whitesmoke', 'red', '#CCC'],
+        fixedElements: '#menu',
+        anchors:['home', 'section1', 'section2', 'section3', 'section4', 'section5'],
+        onLeave: function(index, nextIndex, direction){
+            console.log(index, nextIndex, direction);
+            if (socket != undefined){
+                socket.emit('changeSection', nextIndex);
+            }
+        }
+    });
+
+    $("#slides").slidesjs({
+        width: 940,
+        height: 528
+    });
 
     init();
 
