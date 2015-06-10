@@ -1,4 +1,4 @@
-#remote-code {
+#remote-button {
 
     position: fixed;
     top: 10px;
@@ -10,7 +10,7 @@
 
 }
 
-#remote-code a {
+#remote-button a {
 
     display: block;
     width: 100%;
@@ -55,4 +55,11 @@
 
 #slides {
 
+}
+
+.case {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    margin: 0 5px;
 }

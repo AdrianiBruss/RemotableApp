@@ -3,18 +3,18 @@ $(function () {
 
 
     // ----------------------------------------------------------------------------------
-    var $htmlBody = $('html, body');
-    var $window = $(window);
-    var height_window = $window.height();
-    var hash = '';
-    var socket;
+    var $htmlBody = $('html, body');  // ok
+    var $window = $(window);  // ok
+    var height_window = $window.height();  // ok
+    var hash = '';  // ok
+    var socket;  // ok
     var key = '';
-
+  // ok
     // --------------------------------------------------
     // Check localStorage
 
-    var local = getLocal();
-    var websites = JSON.parse(local);
+    var local = getLocal();  // ok
+    var websites = JSON.parse(local); // ok
 
 
     // --------------------------------------------------
@@ -44,20 +44,20 @@ $(function () {
             'margin': '0 5px'
         });
 
-    }
+    } // ok
 
     function putContentOnPopup(msg) {
 
         $('#remote-popup')
             .append('<p>' + msg + '</p>');
 
-    }
+    } // ok
 
     function hideSecretCode() {
         $('#remote-popup')
             .empty()
             .css('display', 'none');
-    }
+    } // ok
 
     function saveSite(sites, hash, key) {
 
@@ -70,15 +70,15 @@ $(function () {
 
         return sites;
 
-    }
+    } //ok
 
     function getLocal() {
         return localStorage.getItem('remotableSites');
-    }
+    } //ok
 
     function setLocal(sites, hash) {
         localStorage.setItem('remotableSites', JSON.stringify(saveSite(sites, hash)));
-    }
+    } //ok
 
     function removeLocal(hash) {
 
@@ -104,7 +104,7 @@ $(function () {
 
         console.log('item deleted from LocalStorage');
 
-    }
+    } // ok
 
     function connectionToSite(data) {
 
@@ -112,8 +112,8 @@ $(function () {
 
         //socket = io('ws://192.168.20.253:3303');
         //socket = io('ws://192.168.10.16:3303');
-        socket = io('ws://192.168.10.17:3303');
-        //socket = io('ws://remote-cloudbruss.rhcloud.com:8000');
+        //socket = io('ws://192.168.10.17:3303');
+        socket = io('ws://remote-cloudbruss.rhcloud.com:8000');
 
         // --------------------------------------------------
         // En attente de la connexion du mobile
@@ -227,7 +227,7 @@ $(function () {
         }
 
 
-    }
+    } // ok
 
     function windowScroll(dir) {
 
@@ -278,7 +278,7 @@ $(function () {
 
         data.menu = menu;
 
-        data.nbSections = $('.section').length;
+        data.nbSections = $('.fp-section').length;
 
         data.layout = [];
 
@@ -397,35 +397,35 @@ $(function () {
 
         var $popup = $('#remote-code a');
         if ($popup.length > 0) {
-
-            // Display popup
-            $popup.on('click', function () {
-
-                $('#remote-popup').css('display', 'block');
-
-                checkLocal();
-
-            });
+        //
+        //    // Display popup
+        //    $popup.on('click', function () {
+        //
+        //        $('#remote-popup').css('display', 'block');
+        //
+        //        checkLocal();
+        //
+        //    });
 
         } else {
 
             //console.log('OTHER PAGE SCRIPT');
 
-            checkLocal();
+            //checkLocal();
 
         }
 
 
-        // Close Popup
-        $('#remote-popup-close').on('click', function () {
-            $('#remote-popup').css('display', 'none');
-        });
-
-        // DeleteSite
-        $('#remote-popup-delete').on('click', function () {
-
-
-        });
+        //// Close Popup
+        //$('#remote-popup-close').on('click', function () {
+        //    $('#remote-popup').css('display', 'none');
+        //});
+        //
+        //// DeleteSite
+        //$('#remote-popup-delete').on('click', function () {
+        //
+        //
+        //});
 
 
     }
@@ -438,9 +438,11 @@ $(function () {
         anchors:['home', 'section1', 'section2', 'section3', 'section4', 'section5'],
         onLeave: function(index, nextIndex, direction){
             console.log(index, nextIndex, direction);
-            if (socket != undefined){
-                socket.emit('changeSection', nextIndex);
-            }
+            //if (socket != undefined){
+            //    socket.emit('changeSection', nextIndex);
+            //}
+
+            $.fn.remoteSite.changeSection(nextIndex);
         }
     });
 

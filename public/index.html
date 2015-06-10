@@ -10,13 +10,13 @@
 <body>
 
 <div id="wrapper">
-    <div id="remote-code">
-        <a href="#">Remote</a>
-    </div>
+    <!--<div id="remote-code">-->
+        <!--<a href="#">Remote</a>-->
+    <!--</div>-->
 
-    <div id="remote-popup">
-        <span id="remote-popup-close">close</span>
-    </div>
+    <!--<div id="remote-popup">-->
+        <!--<span id="remote-popup-close">close</span>-->
+    <!--</div>-->
     <nav id="menu" class="remote-menu">
         <ul>
             <li class="menu-item" data-menuanchor="home"><a href="#home">Home</a></li>
@@ -95,5 +95,11 @@
 <script type="text/javascript" src="vendors/jquery.slides.min.js"></script>
 <script src="script/script.js"></script>
 <script src="script/main.js"></script>
+<script src="script/jquery.remote.js"></script>
+<script>
+    $.fn.remoteSite({
+        'menu':'menu'
+    });
+</script>
 </body>
 </html>
