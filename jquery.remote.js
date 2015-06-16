@@ -47,11 +47,11 @@
             menu: false, // menuId
             sliderDraggable: [],
             sectionsName: false,
-            slideShowIds: [],
+            slideShow: [],
             swipeSection: function(){},
             changeOrientation: function(){},
             galleryRemote: function(){},
-            sliderDraggableRemote: function(){},
+            dragRemote: function(){},
             videoRemote: function(){},
             buttonRemote: function(){}
 
@@ -423,7 +423,7 @@
             // --------------------------------------------------
             // Delete site from mobile
             SOCKET.on('sliderDraggableDesk', function (data) {
-                OPTIONS.sliderDraggableRemote.call(data);
+                OPTIONS.dragRemote.call(data);
             });
             // --------------------------------------------------
 

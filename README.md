@@ -1,7 +1,7 @@
 # remoteSite.js
 
 ## Introduction
-Remote your website with remoteSite.js. Just plug the library in your site, download the app and enjoy !
+Remote your website with remoteSite.js. Just plug the library into your website, download the app and enjoy !
 
 
 ## Usage
@@ -33,16 +33,16 @@ $(document).ready(function() {
 A more complex initialization with all options set could look like this:
 ```javascript
 $(document).ready(function() {
-	$.remoteSite({
 
+	$.remoteSite({
 		menu: false,
 		sliderDraggable: [],
 		sectionsName: false,
-		slideShowIds: [],
+		slideShow: [],
 		swipeSection: function(){},
 		changeOrientation: function(){},
 		galleryRemote: function(){},
-		sliderDraggableRemote: function(){},
+		dragRemote: function(){},
 		videoRemote: function(){},
 		buttonRemote: function(){}
 
@@ -53,13 +53,14 @@ $(document).ready(function() {
 
 ## Options
 
-- `menu`: (default `false`) Define the menu you want to use on the mobile app to navigate trough it.
-
-- `sectionsName`: (default `.section`) Defines the jQuery selector used for the name of your sections. It might need to be changed sometimes to avoid problem with other plugins.
+- `menu`: (default `false`) Define the menu you want to use on the mobile app to navigate with.
 
 - `sliderDraggable`: (default `[]`) Set an id array of range slider you want to control from the app.
 
-- `sectionsName`: (default `false`) Whether you want to resize the text when the window is resized.
+- `sectionsName`: (default `.section`) Defines the jQuery selector used for the name of your sections. It might need to be changed sometimes to avoid problem with other plugins.
+
+- `slideShow`: (default `[]`) Set an array of id of slideshows you want to remote from the app.
+
 
 
 ### changeSection()
@@ -74,7 +75,7 @@ $.remoteSite.changeSection(nextIndex);
 Callback fired once the user swiped on app.
 Values returned:
 
-- `this.direction`: corresponding to the direction the mobile swiped : ` 'up' || 'down' || 'left' || 'right' `
+- `this.direction`: corresponding to the direction the mobile swiped : ` 'up' , 'down', 'left', 'right' `
 
 Example:
 
@@ -103,7 +104,7 @@ Example:
 Callback fired once the user change the mobile's orientation.
 Values returned:
 
-- `this.data.orientation`: corresponding to the mobile's orientation : ` 'landscape' || 'portrait' `
+- `this.data.orientation`: corresponding to the mobile's orientation : ` 'landscape',  'portrait' `
 - `this.data.section`: corresponding to the section's number : ` 1,2,3 ... `
 
 Example:
@@ -114,7 +115,7 @@ Example:
 
 		changeOrientation: function(){
 
-			if ( this.orientation.orientation == 'landscape' ) {
+			if ( this.data.orientation == 'landscape' ) {
 
 			 	...
 			}
@@ -128,8 +129,8 @@ Example:
 If you want to remote an image carousel, you'll need to trigger your slideshow's arrows
 Values returned:
 
-- `this.arrow.arrow`: fired when left or right arrow is tapped on mobile app : ` 'left' || 'right' `
-- `this.orientation.section`: corresponding to the section's number : ` 1,2,3 ... `
+- `this.data.arrow`: fired when left or right arrow is tapped on mobile app : ` 'left',  'right' `
+- `this.data.section`: corresponding to the section's number : ` 1,2,3 ... `
 
 Example:
 
@@ -139,7 +140,7 @@ Example:
 
 		changeOrientation: function(){
 
-			if ( this.orientation.orientation == 'landscape' ) {
+			if ( this.data.orientation == 'landscape' ) {
 
 			 	...
 			}
@@ -149,6 +150,59 @@ Example:
 ```
 
 
+###dragRemote ()
+If you need some drag gesture in order to remote a slider or a stop motion, use this callback.
+Values returned:
+
+- `this.data.drag`: return a range of values : `between  -200 and 200 `
+- `this.data.direction`: corresponding to the direction the mobile was dragged : ` 'up',  'down',  'left',  'right' `
+- `this.data.section`: corresponding to the section's number : ` 1,2,3 ... `
+
+Example:
+
+```javascript
+
+	$.remoteSite({
+
+		dragRemote: function(){
+
+			...
+
+		}
+	});
+```
+
+
+###videoRemote ()
+This callback allows you to control a YouTube video from the mobile app.
+Values returned:
+
+- `this.data.command`: return the command corresponding to the user tapped on mobile : ` 'playVideo', 'pauseVideo', 'mute', 'unMute', 'fullscreen', 'unfullscreen'  `
+- `this.data.section`: corresponding to the section's number : ` 1,2,3 ... `
+
+Example:
+
+```javascript
+
+	$.remoteSite({
+
+		videoRemote: function(){
+
+			var $video = $('#video-youtube');
+
+		    	if (this.data.command == 'fullscreen' || this.data.command == 'unfullscreen') {
+
+		    		...
+
+		    	} else {
+
+		    		$video[0].contentWindow.postMessage('{"event":"command","func":"' + this.data.command + '","args":""}', '*');
+
+		    	}
+
+		}
+	});
+```
 
 
 
