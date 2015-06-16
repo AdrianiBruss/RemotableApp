@@ -26,7 +26,6 @@
         // sections
         var SECTION_DEFAULT_NAME = '.section';
         var FN_SECTION_SELECTOR = '.fp-section';
-        var SECTION_SELECTOR_COUNT = $(FN_SECTION_SELECTOR).length;
 
         // text buttons
         var TEXT_BUTTONS = '.remote-text-item';
@@ -35,7 +34,10 @@
         var VIDEO_ITEMS = '.remote-video-item';
 
         // images items
-        var IMG_ITEMS = '.remote-img-item';
+        var IMG_ITEMS = '.remote-element-link';
+
+        // infos item
+        var INFO_ITEMS = '.remote-info-item';
 
         var RS = $.fn.remoteSite;
 
@@ -44,13 +46,14 @@
             //navigation
             menu: false, // menuId
             sliderDraggable: [],
-            sectionsName: SECTION_DEFAULT_NAME,
+            sectionsName: false,
             slideShowIds: [],
             swipeSection: function(){},
             changeOrientation: function(){},
             galleryRemote: function(){},
             sliderDraggableRemote: function(){},
-            videoRemote: function(){}
+            videoRemote: function(){},
+            buttonRemote: function(){}
 
         }, options);
 
@@ -69,8 +72,8 @@
         // -------------------------------------------------------------------
 
 
-        var $REMOTE_BUTTON = $('<div id="remote-button"><a href="#">Remote</a></div>');
-        var $REMOTE_POPUP = $('<div id="remote-popup"><span id="remote-popup-close">close</span></div>');
+        var $REMOTE_BUTTON = $('<div id="remote-button"></div>');
+        var $REMOTE_POPUP = $('<div id="remote-overlay"><div id="remote-popup"><span id="remote-popup-close"></span><div id="popup-container"></div></div></div>');
 
         var LOCAL = getLocal();
         var LOCAL_SITES = LOCAL ? JSON.parse(LOCAL) : '';
@@ -140,7 +143,7 @@
         function isInLocal() {
             if (LOCAL_SITES != null) {
                 return $.grep(LOCAL_SITES, function (e) {
-                    return e.name == document.URL.split('/')[2];
+                    return e.name == document.URL.split('#')[0];
                 });
             } else {
                 return null;
@@ -152,7 +155,7 @@
         function saveSite(sites, hash, key) {
 
             var site = {};
-            site.name = document.URL.split('/')[2];
+            site.name = document.URL.split('#')[0];
             site.url = document.URL;
             site.hash = hash;
             site.key = key;
@@ -177,13 +180,13 @@
 
         // Remove popup
         function removePopup() {
-            $REMOTE_POPUP.empty().css('display', 'none');
-            $REMOTE_POPUP.append('<span id="remote-popup-close">close</span>');
+            $REMOTE_POPUP.find('#popup-container').empty();
+            $REMOTE_POPUP.css('display', 'none');
         }
 
         // Set popup message
         function setPopup(msg) {
-            $REMOTE_POPUP.append('<p>' + msg + '</p>');
+            $REMOTE_POPUP.find('#popup-container').append('<p>' + msg + '</p>');
             openPopup();
         }
 
@@ -212,7 +215,7 @@
             var data = {};
             data.title = $(document).find("title").text();
             data.favicon = 'favicon.png';
-            data.url = document.URL;
+            data.name = document.URL.split('#')[0];
 
             return data;
 
@@ -229,6 +232,7 @@
             var gallery_items = OPTIONS.slideShowIds;
             var slider_draggable = OPTIONS.sliderDraggable;
             var $menuItems = $(OPTIONS.menu).find('li');
+            var $textItems = $(INFO_ITEMS);
             var menu = [];
 
             // menu
@@ -242,7 +246,7 @@
             });
 
             data.menu = menu;
-            data.nbSections = SECTION_SELECTOR_COUNT;
+            data.nbSections = $(OPTIONS.sectionsName).length;
 
             data.layout = [];
             for (var item = 0; item < data.nbSections; item++) {
@@ -256,7 +260,8 @@
                 var imgGallery = {};
                 imgGallery.type = 'Gallery';
                 imgGallery.text = 'Landscape to see the gallery';
-                imgGallery.section = $('' + gallery_items[i] + '').closest(FN_SECTION_SELECTOR).index() + 1;
+                imgGallery.rotate = 'true';
+                imgGallery.section = $('' + gallery_items[i] + '').closest(OPTIONS.sectionsName).index() + 1;
                 data.layout[imgGallery.section - 1].push(imgGallery);
 
             }
@@ -269,7 +274,8 @@
                 textLinks.type = 'link';
                 textLinks.text = $text_links.eq(key).text();
                 textLinks.url = $text_links.eq(key).attr('href');
-                textLinks.section = $text_links.eq(key).closest(FN_SECTION_SELECTOR).index() + 1;
+                textLinks.rotate = 'false';
+                textLinks.section = $text_links.eq(key).closest(OPTIONS.sectionsName).index() + 1;
                 data.layout[textLinks.section - 1].push(textLinks);
 
             });
@@ -281,7 +287,8 @@
                 var videoLinks = {};
                 videoLinks.type = 'video';
                 videoLinks.text = 'landscape to play tha video';
-                videoLinks.section = $video_items.eq(key).closest(FN_SECTION_SELECTOR).index() + 1;
+                videoLinks.rotate = 'true';
+                videoLinks.section = $video_items.eq(key).closest(OPTIONS.sectionsName).index() + 1;
                 data.layout[videoLinks.section - 1].push(videoLinks);
 
             });
@@ -293,7 +300,8 @@
                 var sliderDraggable = {};
                 sliderDraggable.type = 'DraggableSlider';
                 sliderDraggable.text = 'landscape to drag the slider';
-                sliderDraggable.section = $('' + gallery_items[i] + '').closest(FN_SECTION_SELECTOR).index() + 1;
+                sliderDraggable.rotate = 'true';
+                sliderDraggable.section = $('' + slider_draggable[j] + '').closest(OPTIONS.sectionsName).index() + 1;
                 data.layout[sliderDraggable.section - 1].push(sliderDraggable);
 
             }
@@ -302,14 +310,24 @@
             $.each($img_items, function (key, value) {
 
                 var imgLinks = {};
-                imgLinks.type = 'image link';
-                imgLinks.text = 'image';
-                imgLinks.section = $img_items.eq(key).closest(FN_SECTION_SELECTOR).index() + 1;
+                imgLinks.type = 'link';
+                imgLinks.text = $img_items.eq(key).text();
+                imgLinks.rotate = 'false';
+                imgLinks.section = $img_items.eq(key).closest(OPTIONS.sectionsName).index() + 1;
                 data.layout[imgLinks.section - 1].push(imgLinks);
 
             });
 
-            console.log(data);
+            $.each($textItems, function (key, value) {
+
+                var textInfo = {};
+                textInfo.type = 'info';
+                textInfo.text = $textItems.eq(key).attr('data-remote-text');
+                textInfo.rotate = 'false';
+                textInfo.section = $textItems.eq(key).closest(OPTIONS.sectionsName).index() + 1;
+                data.layout[textInfo.section - 1].push(textInfo);
+
+            });
 
             return data;
 
@@ -342,6 +360,7 @@
 
                     CONNECTION_STATE = true;
                     closePopup();
+                    $REMOTE_BUTTON.css('display', 'none');
 
                     $.fn.fullpage.moveTo(1);
 
@@ -353,7 +372,7 @@
                         var local_site = isInLocal();
                         if (local_site.length == 0) {
                             // save site
-                            setLocal(WEBSITES, HASH, KEY);
+                            setLocal(LOCAL_SITES, HASH, KEY);
                         }
 
                     }
@@ -406,7 +425,13 @@
             SOCKET.on('sliderDraggableDesk', function (data) {
                 OPTIONS.sliderDraggableRemote.call(data);
             });
+            // --------------------------------------------------
 
+            // --------------------------------------------------
+            // Delete site from mobile
+            SOCKET.on('buttonRemoteDesk', function (data) {
+                OPTIONS.buttonRemote.call(data);
+            });
             // --------------------------------------------------
 
             // -------------------------
@@ -472,6 +497,7 @@
 
                     dataContext.hash = HASH;
                     $.extend(dataContext, getContext());
+
                     setConnection(dataContext);
 
 
