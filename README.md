@@ -11,18 +11,6 @@ As you can see in the example files, you will need to include:
  - The css file `jquery.remoteSite.css`
 
 
-### Install using bower or npm
-**Optionally**, you can install fullPage.js with bower or npm if you prefer:
-
-Terminal:
-```shell
-// With bower
-bower install remoteSite.js
-
-// With npm
-npm install remoteSite.js
-```
-
 ###Including files:
 ```html
 <link rel="stylesheet" type="text/css" href="jquery.remoteSite.css" />
@@ -81,7 +69,6 @@ $.remoteSite.changeSection(nextIndex);
 ```
 
 ## Callbacks
-You can see them in action [here](http://alvarotrigo.com/fullPage/examples/callbacks.html).
 
 ###swipeSection (`anchorLink`, `index`)
 Callback fired once the sections have been loaded, after the scrolling has ended.
@@ -113,146 +100,9 @@ Example:
 		}
 	});
 ```
----
-###onLeave (`index`, `nextIndex`, `direction`)
-This callback is fired once the user leaves a section, in the transition to the new section.
-Returning `false` will cancel the move before it takes place.
-
-Parameters:
-
-- `index`: index of the leaving section. Starting from 1.
-- `nextIndex`: index of the destination section. Starting from 1.
-- `direction`: it will take the values `up` or `down` depending on the scrolling direction.
-
-Example:
-
-```javascript
-	$('#fullpage').fullpage({
-		onLeave: function(index, nextIndex, direction){
-			var leavingSection = $(this);
-
-			//after leaving section 2
-			if(index == 2 && direction =='down'){
-				alert("Going to section 3!");
-			}
-
-			else if(index == 2 && direction == 'up'){
-				alert("Going to section 1!");
-			}
-		}
-	});
-```
-
-####Cancelling the scroll before it takes place
-You can cancel the scroll by returning `false` on the `onLeave` callback:
-
-```javascript
-	$('#fullpage').fullpage({
-		onLeave: function(index, nextIndex, direction){
-			//it won't scroll if the destination is the 3rd section
-			if(nextIndex == 3){
-				return false;
-			}
-		}
-	});
-```
-
----
-###afterRender()
-This callback is fired just after the structure of the page is generated. This is the callback you want to use to initialize other plugins or fire any code which requires the document to be ready (as this plugin modifies the DOM to create the resulting structure).
-
-Example:
-
-```javascript
-	$('#fullpage').fullpage({
-		afterRender: function(){
-			var pluginContainer = $(this);
-			alert("The resulting DOM structure is ready");
-		}
-	});
-```
----
-###afterResize()
-This callback is fired after resizing the browser's window. Just after the sections are resized.
-
-Example:
-
-```javascript
-	$('#fullpage').fullpage({
-		afterResize: function(){
-			var pluginContainer = $(this);
-			alert("The sections have finished resizing");
-		}
-	});
-```
----
-###afterSlideLoad (`anchorLink`, `index`, `slideAnchor`, `slideIndex`)
-Callback fired once the slide of a section have been loaded, after the scrolling has ended.
-Parameters:
-
-- `anchorLink`: anchorLink corresponding to the section.
-- `index`: index of the section. Starting from 1.
-- `slideAnchor`: anchor corresponding to the slide (in case there is)
-- `slideIndex`: index of the slide. Starting from 1. (the default slide doesn't count as slide, but as a section)
-
-In case of not having anchorLinks defined for the slide or slides the `slideIndex` parameter would be the only one to use.
-Example:
-
-```javascript
-	$('#fullpage').fullpage({
-		anchors: ['firstPage', 'secondPage', 'thirdPage', 'fourthPage', 'lastPage'],
-
-		afterSlideLoad: function( anchorLink, index, slideAnchor, slideIndex){
-			var loadedSlide = $(this);
-
-			//first slide of the second section
-			if(anchorLink == 'secondPage' && slideIndex == 1){
-				alert("First slide loaded");
-			}
-
-			//second slide of the second section (supposing #secondSlide is the
-			//anchor for the second slide
-			if(index == 2 && slideIndex == 'secondSlide'){
-				alert("Second slide loaded");
-			}
-		}
-	});
-```
 
 
----
-###onSlideLeave (`anchorLink`, `index`, `slideIndex`, `direction`, `nextSlideIndex`)
-This callback is fired once the user leaves an slide to go to another, in the transition to the new slide.
-Returning `false` will cancel the move before it takes place.
 
-Parameters:
-
-- `anchorLink`: anchorLink corresponding to the section.
-- `index`: index of the section. Starting from 1.
-- `slideIndex`: index of the slide. **Starting from 0.**
-- `direction`: takes the values `right` or `left` depending on the scrolling direction.
-- `nextSlideIndex`: index of the destination slide. **Starting from 0.**
-
-
-Example:
-
-```javascript
-	$('#fullpage').fullpage({
-		onSlideLeave: function( anchorLink, index, slideIndex, direction, nextSlideIndex){
-			var leavingSlide = $(this);
-
-			//leaving the first slide of the 2nd Section to the right
-			if(index == 2 && slideIndex == 0 && direction == 'right'){
-				alert("Leaving the fist slide!!");
-			}
-
-			//leaving the 3rd slide of the 2nd Section to the left
-			if(index == 2 && slideIndex == 2 && direction == 'left'){
-				alert("Going to slide 2! ");
-			}
-		}
-	});
-```
 
 
 ## Donations
