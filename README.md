@@ -70,14 +70,11 @@ $.remoteSite.changeSection(nextIndex);
 
 ## Callbacks
 
-###swipeSection (`anchorLink`, `index`)
-Callback fired once the sections have been loaded, after the scrolling has ended.
-Parameters:
+###swipeSection ()
+Callback fired once the user swiped on app.
+Values returned:
 
-- `anchorLink`: anchorLink corresponding to the section.
-- `index`: index of the section. Starting from 1.
-
-In case of not having anchorLinks defined in the plugin the `index` parameter would be the only one to use.
+- `this.direction`: corresponding to the direction the mobile swiped : ` 'up' || 'down' || 'left' || 'right' `
 
 Example:
 
@@ -85,18 +82,68 @@ Example:
 
 	$.remoteSite({
 
-		swipeSection: function(anchorLink, index){
-			var loadedSection = $(this);
+		swipeSection: function () {
 
-			//using index
-			if(index == 3){
-				alert("Section 3 ended loading");
+			switch(this.direction) {
+
+				case 'up':
+					...
+				break;
+				case 'down':
+					...
+				break;
+
 			}
 
-			//using anchorLink
-			if(anchorLink == 'secondSlide'){
-				alert("Section 2 ended loading");
+		}
+	});
+```
+
+###changeOrientation ()
+Callback fired once the user change the mobile's orientation.
+Values returned:
+
+- `this.data.orientation`: corresponding to the mobile's orientation : ` 'landscape' || 'portrait' `
+- `this.data.section`: corresponding to the section's number : ` 1,2,3 ... `
+
+Example:
+
+```javascript
+
+	$.remoteSite({
+
+		changeOrientation: function(){
+
+			if ( this.orientation.orientation == 'landscape' ) {
+
+			 	...
 			}
+
+		}
+	});
+```
+
+
+###galleryRemote ()
+If you want to remote an image carousel, you'll need to trigger your slideshow's arrows
+Values returned:
+
+- `this.arrow.arrow`: fired when left or right arrow is tapped on mobile app : ` 'left' || 'right' `
+- `this.orientation.section`: corresponding to the section's number : ` 1,2,3 ... `
+
+Example:
+
+```javascript
+
+	$.remoteSite({
+
+		changeOrientation: function(){
+
+			if ( this.orientation.orientation == 'landscape' ) {
+
+			 	...
+			}
+
 		}
 	});
 ```
@@ -108,7 +155,7 @@ Example:
 ## Donations
 Donations would be more than welcome :)
 
-[![Donate](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=BEK5JQCQMED4J&lc=GB&item_name=fullPage%2ejs&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+[![Donate](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)]
 
 
 ## License
