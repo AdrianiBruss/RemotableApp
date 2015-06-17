@@ -304,6 +304,12 @@
 
                 for (var i = 0; i < item.length; i++) {
 
+                    if (type == 'gallery'){
+
+                        object.nbSlides = $('' +item[i]+ '').find('.img-slider').length;
+
+                    }
+
                     object.type = type;
                     object.text = text;
                     object.rotate = rotate;
