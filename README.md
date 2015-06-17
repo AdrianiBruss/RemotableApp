@@ -2,6 +2,7 @@
 
 ## Introduction
 Remote your website with remoteSite.js. Just plug the library into your website, download the app and enjoy !
+This library is optimized with a sections structured website
 
 
 ## Usage

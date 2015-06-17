@@ -16,7 +16,11 @@
     var $document = $(document);
     var BASE_URL = $(location).attr('href').split('#')[0];
 
-    $.fn.remoteSite = function (options) {
+    $.remoteSite = function (options) {
+
+        // -------------------------------------------------------------------
+        // library's variables
+        // -------------------------------------------------------------------
 
         var $htmlBody = $('html, body');
         var $body = $('body');
@@ -39,7 +43,11 @@
         // infos item
         var INFO_ITEMS = '.remote-info-item';
 
-        var RS = $.fn.remoteSite;
+        var RS = $.remoteSite;
+
+        // -------------------------------------------------------------------
+        // library's options
+        // -------------------------------------------------------------------
 
         var OPTIONS = $.extend({
 
@@ -103,7 +111,7 @@
 
         // -------------------------------------------------------------------
         // Functions
-
+        // -------------------------------------------------------------------
 
         // -------------------------------------------------------------------
         // LocalStorage
@@ -201,7 +209,7 @@
                 code += '<span class="case" style="background-color:#' + colors[keyColor[i]] + '"></span>';
 
             }
-            $REMOTE_POPUP.append('<p>Download the app and enter the code : </p>').append(code);
+            $REMOTE_POPUP.find('#popup-container').append('<p>Download the app and enter the code : </p>').append(code);
 
         }
 
@@ -220,7 +228,6 @@
             return data;
 
         }
-
 
         function getContext() {
 
@@ -255,82 +262,84 @@
 
 
             // Galleries
-            for (var i = 0; i < gallery_items.length; i++) {
-
-                var imgGallery = {};
-                imgGallery.type = 'Gallery';
-                imgGallery.text = 'Landscape to see the gallery';
-                imgGallery.rotate = 'true';
-                imgGallery.section = $('' + gallery_items[i] + '').closest(OPTIONS.sectionsName).index() + 1;
-                data.layout[imgGallery.section - 1].push(imgGallery);
-
-            }
-
-
-            // Text buttons
-            $.each($text_links, function (key, value) {
-
-                var textLinks = {};
-                textLinks.type = 'link';
-                textLinks.text = $text_links.eq(key).text();
-                textLinks.url = $text_links.eq(key).attr('href');
-                textLinks.rotate = 'false';
-                textLinks.section = $text_links.eq(key).closest(OPTIONS.sectionsName).index() + 1;
-                data.layout[textLinks.section - 1].push(textLinks);
-
-            });
-
-
-            // Videos
-            $.each($video_items, function (key, value) {
-
-                var videoLinks = {};
-                videoLinks.type = 'video';
-                videoLinks.text = 'landscape to play tha video';
-                videoLinks.rotate = 'true';
-                videoLinks.section = $video_items.eq(key).closest(OPTIONS.sectionsName).index() + 1;
-                data.layout[videoLinks.section - 1].push(videoLinks);
-
-            });
+            var imgGallery = {};
+            console.log(gallery_items);
+            getElementsFromOptions(imgGallery, data, gallery_items, 'gallery', 'true', 'Landscape to see the gallery');
 
 
             // $slider_draggable
-            for (var j = 0; j < slider_draggable.length; j++) {
+            var sliderDraggable = {};
+            getElementsFromOptions(sliderDraggable, data, slider_draggable, 'DraggableSlider', 'true', 'landscape to drag the slider');
 
-                var sliderDraggable = {};
-                sliderDraggable.type = 'DraggableSlider';
-                sliderDraggable.text = 'landscape to drag the slider';
-                sliderDraggable.rotate = 'true';
-                sliderDraggable.section = $('' + slider_draggable[j] + '').closest(OPTIONS.sectionsName).index() + 1;
-                data.layout[sliderDraggable.section - 1].push(sliderDraggable);
 
-            }
+            // Text buttons
+            var textLinks = {};
+            getElementsFromDomClasses(textLinks, data, $text_links, 'link', 'false', '', 'url');
+
+
+            // Videos
+            var videoLinks = {};
+            getElementsFromDomClasses(videoLinks, data, $video_items, 'video', 'true', 'landscape to play the video', '');
+
 
             // Images
-            $.each($img_items, function (key, value) {
+            var imgLinks = {};
+            getElementsFromDomClasses(imgLinks, data, $img_items, 'link', 'false', '', '');
 
-                var imgLinks = {};
-                imgLinks.type = 'link';
-                imgLinks.text = $img_items.eq(key).text();
-                imgLinks.rotate = 'false';
-                imgLinks.section = $img_items.eq(key).closest(OPTIONS.sectionsName).index() + 1;
-                data.layout[imgLinks.section - 1].push(imgLinks);
 
-            });
+            var textInfo = {};
+            getElementsFromDomClasses(textInfo, data, $textItems, 'info', 'false', 'data-remote-text');
 
-            $.each($textItems, function (key, value) {
-
-                var textInfo = {};
-                textInfo.type = 'info';
-                textInfo.text = $textItems.eq(key).attr('data-remote-text');
-                textInfo.rotate = 'false';
-                textInfo.section = $textItems.eq(key).closest(OPTIONS.sectionsName).index() + 1;
-                data.layout[textInfo.section - 1].push(textInfo);
-
-            });
+            console.log('----- data from get Context');
+            console.log(data);
 
             return data;
 
+
+        }
+
+        function getElementsFromOptions(object, data, item, type, rotate, text){
+
+            if ( item != undefined ){
+
+                for (var i = 0; i < item.length; i++) {
+
+                    object.type = type;
+                    object.text = text;
+                    object.rotate = rotate;
+                    object.section = $('' + item[i] + '').closest(OPTIONS.sectionsName).index() + 1;
+                    data.layout[object.section - 1].push(object);
+
+                }
+
+            }
+
+        }
+
+        function getElementsFromDomClasses(object, data, item, type, rotate, text, url){
+
+            $.each(item, function (key, value) {
+
+                if (text == ''){
+
+                    object.text = item.eq(key).text();
+
+                }else{
+
+                    object.text = item.eq(key).attr(text);
+
+                }
+
+                if (url != ''){
+                    object.url = item.eq(key).attr('href');
+                }
+
+                object.type = type;
+                object.rotate = rotate;
+                object.section = item.eq(key).closest(OPTIONS.sectionsName).index() + 1;
+                data.layout[object.section - 1].push(object);
+
+            });
 
         }
 
@@ -340,15 +349,9 @@
         function setConnection(data) {
 
             SOCKET = io('ws://remote-cloudbruss.rhcloud.com:8000');
-            //socket = io('ws://192.168.20.253:3303');
-            //socket = io('ws://192.168.10.16:3303');
-            //socket = io('ws://192.168.10.17:3303');
-
-            // --------------------------------------------------
-
 
             // -------------------------
-            // Events sent by the mobile
+            // Events sent from the mobile
             // -------------------------
 
             // --------------------------------------------------
@@ -435,7 +438,7 @@
             // --------------------------------------------------
 
             // -------------------------
-            // Events sent the library
+            // Events sent from the library
             // -------------------------
 
             // --------------------------------------------------
@@ -468,17 +471,27 @@
         }
 
 
+
+        function groupDataToSetConnection(data){
+
+            $.extend(data, getContext());
+
+            setConnection(data);
+
+        }
+
         // -------------------------------------------------------------------
         // init function
 
         function init() {
 
+            var data;
+
             if (LOCAL == null) {
 
-                var data = getData();
-                $.extend(data, getContext());
+                data = getData();
 
-                setConnection(data);
+                groupDataToSetConnection(data);
 
             } else {
 
@@ -489,17 +502,13 @@
                     console.log('already connected with token ' + result[0].hash);
 
                     dataContext.hash = result[0].hash;
-                    $.extend(dataContext, getContext());
+                    groupDataToSetConnection(dataContext);
 
-                    setConnection(dataContext);
 
                 } else {
 
-                    dataContext.hash = HASH;
-                    $.extend(dataContext, getContext());
-
-                    setConnection(dataContext);
-
+                    data = getData();
+                    groupDataToSetConnection(data);
 
                 }
 
