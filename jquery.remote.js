@@ -38,7 +38,7 @@
         var VIDEO_ITEMS = '.remote-video-item';
 
         // images items
-        var IMG_ITEMS = '.remote-element-link';
+        //var IMG_ITEMS = '.remote-element-link';
 
         // infos item
         var INFO_ITEMS = '.remote-info-item';
@@ -56,6 +56,7 @@
             sliderDraggable: [],
             sectionsName: false,
             slideShow: [],
+            elementsLink: [],
             swipeSection: function(){},
             changeOrientation: function(){},
             galleryRemote: function(){},
@@ -235,7 +236,7 @@
 
             var $text_links = $(TEXT_BUTTONS);
             var $video_items = $(VIDEO_ITEMS);
-            var $img_items = $(IMG_ITEMS);
+            var $el_links = OPTIONS.elementsLink;
             var gallery_items = OPTIONS.slideShowIds;
             var slider_draggable = OPTIONS.sliderDraggable;
             var $menuItems = $(OPTIONS.menu).find('li');
@@ -261,34 +262,41 @@
             }
 
 
+            // Text buttons for sections
+
+            getElementsFromDomClasses(data, $text_links, 'link', 'false', '', 'url');
+
+
             // Galleries
-            var imgGallery = {};
-            console.log(gallery_items);
-            getElementsFromOptions(imgGallery, data, gallery_items, 'gallery', 'true', 'Landscape to see the gallery');
+            getElementsFromOptions(data, gallery_items, 'gallery', 'true', 'Landscape to see the gallery');
 
 
             // $slider_draggable
-            var sliderDraggable = {};
-            getElementsFromOptions(sliderDraggable, data, slider_draggable, 'DraggableSlider', 'true', 'landscape to drag the slider');
-
-
-            // Text buttons for sections
-            var textLinks = {};
-            getElementsFromDomClasses(textLinks, data, $text_links, 'link', 'false', '', 'url');
+            getElementsFromOptions(data, slider_draggable, 'DraggableSlider', 'true', 'landscape to drag the slider');
 
 
             // Videos
-            var videoLinks = {};
-            getElementsFromDomClasses(videoLinks, data, $video_items, 'video', 'true', 'landscape to play the video', '');
+            getElementsFromDomClasses(data, $video_items, 'video', 'true', 'landscape to play the video', '');
 
 
-            // Images
-            var imgLinks = {};
-            getElementsFromDomClasses(imgLinks, data, $img_items, 'link', 'false', '', '');
+            // Elements Links
+            for (var j = 0; j < $el_links.length; j++){
+
+                var elementsLinks = {};
+
+                elementsLinks = $el_links[j];
+                elementsLinks.parentText = $(''+$el_links[j].parent+'').text();
+                elementsLinks.type = 'elementLink';
+                elementsLinks.rotate = 'false';
+                elementsLinks.state = 'close';
+                data.layout[elementsLinks.section - 1].push(elementsLinks);
 
 
-            var textInfo = {};
-            getElementsFromDomClasses(textInfo, data, $textItems, 'info', 'false', 'data-remote-text');
+            }
+
+
+            // Text info
+            getElementsFromDomClasses(data, $textItems, 'info', 'false', 'data-remote-text');
 
             console.log('----- data from get Context');
             console.log(data);
@@ -298,7 +306,9 @@
 
         }
 
-        function getElementsFromOptions(object, data, item, type, rotate, text){
+        function getElementsFromOptions(data, item, type, rotate, text){
+
+            var object = {};
 
             if ( item != undefined ){
 
@@ -309,11 +319,10 @@
                         object.nbSlides = $('' +item[i]+ '').find('.img-slider').length;
 
                     }
-
+                    object.section = $('' + item[i] + '').closest(OPTIONS.sectionsName).index() + 1;
                     object.type = type;
                     object.text = text;
                     object.rotate = rotate;
-                    object.section = $('' + item[i] + '').closest(OPTIONS.sectionsName).index() + 1;
                     data.layout[object.section - 1].push(object);
 
                 }
@@ -322,27 +331,29 @@
 
         }
 
-        function getElementsFromDomClasses(object, data, item, type, rotate, text, url){
+        function getElementsFromDomClasses(data, item, type, rotate, text, url){
 
             $.each(item, function (key, value) {
 
+                var object = {};
+
                 if (text == ''){
 
-                    object.text = item.eq(key).text();
+                    object.text = $(value).text();
 
                 }else{
 
-                    object.text = item.eq(key).attr(text);
+                    object.text = $(value).attr(text);
 
                 }
 
                 if (url != ''){
-                    object.url = item.eq(key).attr('href');
+                    object.url = $(value).attr('href');
                 }
 
+                object.section = $(value).closest(OPTIONS.sectionsName).index() + 1;
                 object.type = type;
                 object.rotate = rotate;
-                object.section = item.eq(key).closest(OPTIONS.sectionsName).index() + 1;
                 data.layout[object.section - 1].push(object);
 
             });
