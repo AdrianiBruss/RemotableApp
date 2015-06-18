@@ -21,6 +21,24 @@ As you can see in the example files, you will need to include:
 <script type="text/javascript" src="jquery.remoteSite.js"></script>
 ```
 
+###Required HTML structure
+
+You have to implements the classes following to define which functionality you want to remote from the app.
+
+ - To remote a video, add `.remote-video-item` class to the iframe
+ ```html
+ <iframe class="remote-video-item" src="//www.youtube.com/embed/...></iframe>
+ ```
+- To display a button to change section, set `.remote-text-item` class to the `<a href=""></a>` element.
+```html
+<a href="#section-2" class="remote-text-item">Learn More</a>
+```
+
+- If you just want to display a title or a paragraph element, add `.remote-info-item` and the data attribute : `data-remote-text="..." `
+```html
+<h2 class="remote-info-item" data-remote-text="Title Section 2">Title Section 2</h2>
+```
+
 
 ###Initialization
 All you need to do is call the plugin inside a `$(document).ready` function:
@@ -50,6 +68,7 @@ $(document).ready(function() {
 	});
 });
 ```
+
 
 
 ## Options

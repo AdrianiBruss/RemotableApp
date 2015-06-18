@@ -31,7 +31,7 @@
         var SECTION_DEFAULT_NAME = '.section';
         var FN_SECTION_SELECTOR = '.fp-section';
 
-        // text buttons
+        // text buttons for sections
         var TEXT_BUTTONS = '.remote-text-item';
 
         // video items
@@ -272,7 +272,7 @@
             getElementsFromOptions(sliderDraggable, data, slider_draggable, 'DraggableSlider', 'true', 'landscape to drag the slider');
 
 
-            // Text buttons
+            // Text buttons for sections
             var textLinks = {};
             getElementsFromDomClasses(textLinks, data, $text_links, 'link', 'false', '', 'url');
 
