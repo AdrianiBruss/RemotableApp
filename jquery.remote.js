@@ -38,7 +38,7 @@
         var VIDEO_ITEMS = '.remote-video-item';
 
         // images items
-        //var IMG_ITEMS = '.remote-element-link';
+        var IMG_ITEMS = '.remote-img-link';
 
         // infos item
         var INFO_ITEMS = '.remote-info-item';
@@ -236,6 +236,7 @@
 
             var $text_links = $(TEXT_BUTTONS);
             var $video_items = $(VIDEO_ITEMS);
+            var $img_items = $(IMG_ITEMS);
             var $el_links = OPTIONS.elementsLink;
             var gallery_items = OPTIONS.slideShowIds;
             var slider_draggable = OPTIONS.sliderDraggable;
@@ -262,8 +263,10 @@
             }
 
 
-            // Text buttons for sections
+            // Img items
+            getElementsFromDomClasses(data, $img_items, 'imgLink', 'false', '', '');
 
+            // Text buttons for sections
             getElementsFromDomClasses(data, $text_links, 'link', 'false', '', 'url');
 
 
@@ -319,6 +322,7 @@
                         object.nbSlides = $('' +item[i]+ '').find('.img-slider').length;
 
                     }
+
                     object.section = $('' + item[i] + '').closest(OPTIONS.sectionsName).index() + 1;
                     object.type = type;
                     object.text = text;
@@ -344,11 +348,14 @@
                 }else{
 
                     object.text = $(value).attr(text);
-
                 }
 
                 if (url != ''){
                     object.url = $(value).attr('href');
+                }
+
+                if(type == 'imgLink'){
+                    object.id = $(value).attr('id');
                 }
 
                 object.section = $(value).closest(OPTIONS.sectionsName).index() + 1;
@@ -403,7 +410,15 @@
             // Change section button or menu
 
             SOCKET.on('changeLinkDesk', function (data) {
-                $(location).attr('href', data.link);
+
+                if (data.link.link){
+
+                    $(location).attr('href', data.link.link);
+                }else if (data.link.id){
+
+                    $('#'+data.link.id+'').trigger('click');
+
+                }
             });
 
             // --------------------------------------------------
@@ -423,36 +438,34 @@
             });
 
             // --------------------------------------------------
-            // Delete site from mobile
+            // Change Orientation
             SOCKET.on('changeOrientationDesk', function (data) {
                 OPTIONS.changeOrientation.call(data);
             });
 
             // --------------------------------------------------
-            // Delete site from mobile
+            // Remote gallery
             SOCKET.on('galleryRemoteDesk', function (data) {
                 OPTIONS.galleryRemote.call(data);
             });
 
             // --------------------------------------------------
-            // Delete site from mobile
+            // Remote Video
             SOCKET.on('videoRemoteDesk', function (data) {
                 OPTIONS.videoRemote.call(data);
             });
 
             // --------------------------------------------------
-            // Delete site from mobile
+            // Draggable slider
             SOCKET.on('sliderDraggableDesk', function (data) {
                 OPTIONS.dragRemote.call(data);
             });
-            // --------------------------------------------------
 
             // --------------------------------------------------
-            // Delete site from mobile
+            // Remote Elements links
             SOCKET.on('buttonRemoteDesk', function (data) {
                 OPTIONS.buttonRemote.call(data);
             });
-            // --------------------------------------------------
 
             // -------------------------
             // Events sent from the library
