@@ -26,10 +26,10 @@ As you can see in the example files, you will need to include:
 You have to implements the classes following to define which functionality you want to remote from the app.
 
  - To remote a video, add `.remote-video-item` class to the iframe
- ```html
+```html
  <iframe class="remote-video-item" src="//www.youtube.com/embed/...></iframe>
  ```
-- To display a button to change section, set `.remote-text-item` class to the `<a href=""></a>` element.
+- To display a button to change section, set `.remote-text-item` class to the `<a href="#"></a>` element.
 ```html
 <a href="#section-2" class="remote-text-item">Learn More</a>
 ```
@@ -208,28 +208,12 @@ Example:
 
 		videoRemote: function(){
 
-			var $video = $('#video-youtube');
-
-		    	if (this.data.command == 'fullscreen' || this.data.command == 'unfullscreen') {
-
-		    		...
-
-		    	} else {
-
-		    		$video[0].contentWindow.postMessage('{"event":"command","func":"' + this.data.command + '","args":""}', '*');
-
-		    	}
-
+			...
 		}
 	});
 ```
 
 
-
-## Donations
-Donations would be more than welcome :)
-
-[![Donate](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)]
 
 
 ## License
@@ -237,22 +221,3 @@ Donations would be more than welcome :)
 (The MIT License)
 
 Copyright (c) 2015 Adriani Bruss &lt;abrussolo@gmail.com&gt;
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
