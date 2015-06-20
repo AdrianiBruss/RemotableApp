@@ -248,8 +248,8 @@
             $.each($menuItems, function (key, value) {
                 var link = {};
                 link.url = BASE_URL + $menuItems.eq(key).find('a').attr('href');
-                link.name = link.url.split('#')[1];
-                //link.name = $menuItems.eq(key).find('a').html();
+                //link.name = link.url.split('#')[1];
+                link.name = $menuItems.eq(key).find('a').text();
                 menu.push(link);
 
             });
