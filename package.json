@@ -1,0 +1,24 @@
+{
+  "name": "remoteSite",
+  "version": "1.0.0",
+  "description": "Remote your site from your couch ;)",
+  "dependencies": {
+    "gulp": "^3.8.11"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-minify-css": "^1.0.0",
+    "gulp-uglify": "^1.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AdrianiBruss/remoteSite.git"
+  },
+  "keywords": [],
+  "author": "Adrien Brussolo",
+  "license": "MIT"
+}
